@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ZOMBIE Gaming Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080810;--bg2:#0e0e1c;--bg3:#14142a;--card:#111122;--card2:#181830;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --accent:#0070D1;--accent2:#004fa3;--glow:rgba(0,112,209,0.18);
+  --ps5:#3b82f6;--ps5bg:rgba(59,130,246,0.13);
+  --ps4:#a855f7;--ps4bg:rgba(168,85,247,0.13);
+  --green:#22c55e;--greenbg:rgba(34,197,94,0.12);
+  --red:#ef4444;--redbg:rgba(239,68,68,0.12);
+  --amber:#f59e0b;--amberbg:rgba(245,158,11,0.12);
+  --gold:#f59e0b;--goldbg:rgba(245,158,11,0.13);
+  --text:#ffffff;--text2:#ffffff;--text3:#ffffff;
+  --r:13px;--rs:9px;
+}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:16px}
+/* force all secondary text white bold */
+.sb-sub,.sb-ulbl,.clk-d,.met-s,.ps,.sinf,.barlbl,.barval,.si,.cc-phone,.cc-stats,.user-role,.user-stats,.set-row-del,.fl,.ri,.period-box p,.db-info,.login-sub,.emp td,.txn,.brow .bl{color:#fff!important;font-weight:600!important}
+.nb{color:#dde!important}
+.nb:hover{color:#fff!important}
+::-webkit-scrollbar{width:14px;height:14px}::-webkit-scrollbar-track{background:rgba(255,255,255,.08);border-radius:7px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.7);border-radius:7px;border:2px solid transparent;background-clip:content-box}::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,1);border-radius:7px;border:2px solid transparent;background-clip:content-box}
+*{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.7) rgba(255,255,255,.08)}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);cursor:pointer;opacity:1;transform:scale(1.5);margin-left:4px}
+.wrap{display:flex;min-height:100vh}
+
+/* ── Sidebar ── */
+.sb{width:225px;flex-shrink:0;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+.sb-brand{padding:18px 15px 14px;border-bottom:1px solid var(--border)}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:3px}
+.sb-icon{width:42px;height:42px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 0 18px var(--glow)}
+.sb-name{font-size:17px;font-weight:900;letter-spacing:.5px;color:#fff}
+.sb-sub{font-size:11px;color:var(--text3)}
+.sb-user{padding:10px 15px;border-bottom:1px solid var(--border)}
+.sb-ulbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.sb-uname{font-size:16px;font-weight:700;color:var(--accent)}
+.sb-nav{flex:1;padding:10px 8px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nb{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--rs);font-size:15px;font-weight:600;font-family:'Cairo',sans-serif;color:var(--text2);background:transparent;border:none;cursor:pointer;width:100%;transition:all .15s;text-align:right}
+.nb:hover{background:var(--bg3);color:#fff}
+.nb.on{background:var(--glow);color:var(--accent);border:1px solid rgba(0,112,209,0.22)}
+.nb-ic{font-size:17px;flex-shrink:0}
+.nav-sep{height:1px;background:var(--border);margin:6px 0}
+.sb-clk{padding:12px 15px;border-top:1px solid var(--border);text-align:center}
+.clk-t{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--accent);letter-spacing:2px}
+.clk-d{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ── Main ── */
+.main{flex:1;padding:24px;overflow-y:auto;height:100vh}
+.pg{display:none}.pg.on{display:block}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.pt{font-size:24px;font-weight:800;color:#fff}
+.ps{font-size:13px;color:var(--text3);margin-top:2px}
+
+/* ── Metrics ── */
+.mets{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.met{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.met-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.met-v{font-size:28px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff}
+.met-v.ac{color:var(--accent)}.met-v.gr{color:var(--green)}.met-v.gd{color:var(--gold)}
+.met-s{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ── Devices ── */
+.dg{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.dc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:transform .15s}
+.dc:hover{transform:translateY(-2px)}
+.dc.busy{border-color:var(--accent);box-shadow:0 0 18px rgba(0,112,209,0.15)}
+.dc.free{border-color:rgba(34,197,94,0.35)}
+.dh{padding:12px 14px 10px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border)}
+.dn{font-size:15px;font-weight:800;color:#fff}
+.dtb{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.dtb.ps5{background:var(--ps5bg);color:var(--ps5)}.dtb.ps4{background:var(--ps4bg);color:var(--ps4)}
+.db{padding:12px 14px}
+.srow{display:flex;align-items:center;gap:6px;margin-bottom:9px}
+.sdot{width:7px;height:7px;border-radius:50%}
+.sdot.busy{background:var(--accent);animation:pulse 2s infinite}.sdot.free{background:var(--green)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.stxt{font-size:12px;font-weight:600}.stxt.busy{color:var(--accent)}.stxt.free{color:var(--green)}
+.tmr{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;letter-spacing:1px;margin-bottom:2px;color:#fff}
+.tmr.idle{color:var(--text3)}
+.sinf{font-size:11px;color:var(--text2);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.clbl{color:var(--text3)}.cval{font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}
+.cval.drinks-val{color:var(--amber)}
+.crow-total{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:10px;padding-top:4px;border-top:1px solid var(--border)}
+.total-val{color:var(--green);font-family:'JetBrains Mono',monospace}
+.dbtn{width:100%;padding:8px;font-size:12px;font-weight:700;font-family:'Cairo',sans-serif;border-radius:8px;cursor:pointer;border:none;transition:all .15s;margin-top:3px}
+.dbtn.start{background:var(--green);color:#000}.dbtn.start:hover{background:#16a34a;color:#fff}
+.dbtn.end{background:var(--redbg);color:var(--red);border:1px solid rgba(239,68,68,0.3)}.dbtn.end:hover{background:var(--red);color:#fff}
+.dbtn.add-drink{background:var(--amberbg);color:var(--amber);border:1px solid rgba(245,158,11,0.3);margin-top:4px;font-size:11px;padding:5px}.dbtn.add-drink:hover{background:var(--amber);color:#000}
+
+/* ── Table ── */
+.tw{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:10px 12px;text-align:center;background:var(--bg3);color:var(--text3);font-weight:700;font-size:11px;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+tbody td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--border);color:#fff}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg3)}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.tag.ps5{background:var(--ps5bg);color:var(--ps5)}.tag.ps4{background:var(--ps4bg);color:var(--ps4)}
+.tag.s{background:var(--greenbg);color:var(--green)}.tag.m{background:var(--amberbg);color:var(--amber)}
+.tag.op{background:rgba(0,112,209,0.12);color:var(--accent)}.tag.fx{background:var(--greenbg);color:var(--green)}
+.tag.adtag{background:var(--goldbg);color:var(--gold)}.tag.usrtag{background:var(--glow);color:var(--accent)}
+.txn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)}
+.amc{font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}
+.emp td{padding:30px;color:var(--text3);font-size:14px}
+
+/* ── Modal ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;align-items:center;justify-content:center}
+.ov.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;width:360px;max-height:92vh;overflow-y:auto;animation:sup .2s ease}
+.modal.wide{width:500px}
+@keyframes sup{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mtit{font-size:17px;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:8px;color:#fff}
+.fr{margin-bottom:13px}
+.fl{display:block;font-size:11px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.fi,.fs{width:100%;padding:9px 12px;font-size:15px;background:var(--bg3);color:#fff;border:1px solid var(--border2);border-radius:var(--rs);font-family:'Cairo',sans-serif;outline:none;transition:border-color .15s}
+.fi:focus,.fs:focus{border-color:var(--accent)}
+.fi[type=date]{direction:ltr;text-align:left}
+.fi-row{display:flex;gap:8px}
+.fi-row .fi{flex:1}
+.ri{font-size:13px;color:var(--text3);background:var(--bg3);padding:8px 12px;border-radius:var(--rs)}
+.ri span{color:var(--accent);font-weight:700}
+.mbs{display:flex;gap:8px;margin-top:18px}
+.mbs button{flex:1;padding:10px;font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;border-radius:var(--rs);cursor:pointer;border:1px solid var(--border2);background:transparent;color:#fff;transition:all .15s}
+.mbs button:hover{background:var(--bg3)}
+.mbs .ok{background:var(--accent);color:#fff;border-color:var(--accent)}.mbs .ok:hover{background:var(--accent2)}
+.mbs .ok-g{background:var(--green);color:#000;border-color:var(--green)}.mbs .ok-g:hover{background:#16a34a;color:#fff}
+.mbs .dng{background:var(--red);color:#fff;border-color:var(--red)}.mbs .dng:hover{background:#dc2626}
+.bdiv{height:1px;background:var(--border);margin:10px 0}
+.brow{display:flex;justify-content:space-between;font-size:13px;padding:5px 0}
+.brow .bl{color:var(--text2)}.brow .bv{font-family:'JetBrains Mono',monospace;color:#fff}
+.btot{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding:10px 0 0}
+.btot .bv{color:var(--green);font-family:'JetBrains Mono',monospace}
+.client-hint{font-size:13px;padding:8px 12px;background:var(--greenbg);border:1px solid rgba(34,197,94,0.3);border-radius:var(--rs);color:var(--green);margin-bottom:4px}
+
+/* ── Report ── */
+.rg2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.rg3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.rg4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.rc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:13px}
+.rc h3{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:700}
+.rbig{font-size:30px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.rbig.gr{color:var(--green)}.rbig.gd{color:var(--gold)}.rbig.wh{color:#fff}
+.barrow{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:12px}
+.barlbl{min-width:55px;color:var(--text2);text-align:right;font-weight:600}
+.barbg{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.barfill{height:100%;border-radius:3px;transition:width .5s}
+.barval{min-width:40px;font-family:'JetBrains Mono',monospace;color:var(--text2);font-size:11px}
+.rtabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap}
+.rtab{padding:7px 16px;font-size:13px;font-weight:600;font-family:'Cairo',sans-serif;border-radius:20px;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--text2);transition:all .15s}
+.rtab:hover{background:var(--bg3);color:#fff}.rtab.on{background:var(--glow);color:var(--accent);border-color:rgba(0,112,209,0.3)}
+
+/* ── Users ── */
+.user-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;display:flex;align-items:center;gap:13px;margin-bottom:10px}
+.user-avatar{width:44px;height:44px;border-radius:50%;background:var(--glow);border:1px solid rgba(0,112,209,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.user-avatar.adm{background:var(--goldbg);border-color:rgba(245,158,11,0.3)}
+.user-info{flex:1}.user-name{font-size:15px;font-weight:700;color:#fff}
+.user-role{font-size:12px;color:var(--text3);margin-top:2px}.user-stats{font-size:12px;color:var(--text2);margin-top:3px}
+.user-actions{display:flex;gap:7px}
+.ua{padding:6px 11px;font-size:12px;font-weight:700;font-family:'Cairo',sans-serif;border-radius:7px;cursor:pointer;border:1px solid var(--border2);background:transparent;color:#fff;transition:all .15s}
+.ua:hover{background:var(--bg3)}.ua.del{color:var(--red);border-color:rgba(239,68,68,0.3)}.ua.del:hover{background:var(--redbg)}
+
+/* ── Settings panels ── */
+.set-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.set-panel h3{font-size:16px;font-weight:800;margin-bottom:14px;color:#fff;display:flex;align-items:center;gap:8px}
+.set-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:var(--bg3);border-radius:var(--rs);border:1px solid var(--border)}
+.set-row-name{flex:1;font-size:15px;font-weight:600;color:#fff}
+.set-row-val{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--accent);font-weight:700}
+.set-row-del{padding:4px 10px;font-size:12px;font-weight:700;font-family:'Cairo',sans-serif;border-radius:6px;cursor:pointer;border:1px solid rgba(239,68,68,0.3);background:transparent;color:var(--red);transition:all .15s}
+.set-row-del:hover{background:var(--red);color:#fff}
+.add-row{display:flex;gap:8px;margin-top:12px}
+.add-row .fi{flex:1;font-size:14px;padding:8px 11px}
+.add-btn{padding:8px 18px;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;border-radius:var(--rs);cursor:pointer;border:none;background:var(--accent);color:#fff;transition:all .15s;white-space:nowrap}
+.add-btn:hover{background:var(--accent2)}
+.add-btn.green{background:var(--green);color:#000}.add-btn.green:hover{background:#16a34a;color:#fff}
+
+/* ── Period / Data ── */
+.period-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.period-box h3{font-size:16px;font-weight:800;margin-bottom:6px;color:#fff}
+.period-box p{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.7}
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.period-actions{display:flex;gap:8px;flex-wrap:wrap}
+.pab{padding:9px 17px;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;border-radius:var(--rs);cursor:pointer;border:none;transition:all .15s}
+.pab.pr{background:var(--accent);color:#fff}.pab.pr:hover{background:var(--accent2)}
+.pab.sc{background:var(--bg3);color:#fff;border:1px solid var(--border2)}.pab.sc:hover{background:var(--border2)}
+.pab.danger{background:var(--redbg);color:var(--red);border:1px solid rgba(239,68,68,0.3)}.pab.danger:hover{background:var(--red);color:#fff}
+.period-result{margin-top:10px;font-size:13px;min-height:17px;font-weight:600}
+.period-result.ok{color:var(--green)}.period-result.err{color:var(--red)}.period-result.warn{color:var(--amber)}
+.stats-inline{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px}
+.si{font-size:13px;color:var(--text2)}.si span{color:#fff;font-weight:700;font-family:'JetBrains Mono',monospace}
+.db-info{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:11px 15px;font-size:12px;color:var(--text3);margin-bottom:15px;display:flex;align-items:center;gap:9px}
+.db-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse 2s infinite}
+
+/* ── Drinks modal list ── */
+.drink-list-modal{max-height:180px;overflow-y:auto;margin-bottom:10px}
+.drink-item-modal{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--rs);margin-bottom:6px}
+.dim-name{flex:1;font-size:14px;color:#fff;font-weight:600}
+.dim-price{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--amber)}
+.dim-qty{display:flex;align-items:center;gap:6px}
+.dim-qty button{width:26px;height:26px;border-radius:6px;border:none;background:var(--border2);color:#fff;cursor:pointer;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.dim-qty span{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:#fff;min-width:20px;text-align:center}
+
+/* ── Login ── */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:34px 28px;width:340px;text-align:center}
+.login-icon{font-size:46px;margin-bottom:10px}
+.login-title{font-size:22px;font-weight:900;margin-bottom:3px;color:#fff}
+.login-sub{font-size:13px;color:var(--text3);margin-bottom:22px}
+.login-box .fr{text-align:right}
+.login-err{font-size:13px;color:var(--red);margin-top:8px;min-height:16px;font-weight:600}
+
+/* ── Toast ── */
+.tc{position:fixed;bottom:20px;left:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--card2);border:1px solid var(--border2);border-radius:var(--rs);padding:10px 16px;font-size:14px;font-weight:600;min-width:220px;display:flex;align-items:center;gap:8px;animation:tin .2s ease;color:#fff}
+@keyframes tin{from{transform:translateX(-20px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.ok{border-color:rgba(34,197,94,0.4)}.toast.err{border-color:rgba(239,68,68,0.4)}.toast.warn{border-color:rgba(245,158,11,0.4)}
+
+/* ── Clients ── */
+
+/* Shifts */
+.shift-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.shift-bar.active-shift{border-color:var(--green);box-shadow:0 0 14px rgba(34,197,94,0.15)}
+.shift-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700}
+.shift-badge.on{background:rgba(34,197,94,0.12);color:#22c55e}
+.shift-badge.off{background:var(--bg3);color:var(--text2)}
+.shift-info{flex:1;font-size:13px;font-weight:700;color:#fff}
+.shift-sub{font-size:11px;color:var(--text2);margin-top:3px;font-weight:600}
+.shift-btn{padding:8px 18px;font-size:13px;font-weight:800;font-family:'Cairo',sans-serif;border-radius:var(--rs);cursor:pointer;border:none;transition:all .15s}
+.shift-btn.start-sh{background:#22c55e;color:#000}
+.shift-btn.start-sh:hover{background:#16a34a;color:#fff}
+.shift-btn.end-sh{background:#ef4444;color:#fff}
+.shift-btn.end-sh:hover{background:#dc2626}
+.sb-shift{padding:8px 14px;border-bottom:1px solid var(--border)}
+.sb-shift-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;font-weight:700}
+.sb-shift-val{font-size:13px;font-weight:800;color:#22c55e}
+.sb-shift-val.off{color:var(--text3)}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:var(--r)}
+.filter-bar label{font-size:13px;font-weight:700;color:#fff}
+.filter-bar input[type=date]{padding:7px 11px;font-size:13px;background:var(--bg3);color:#fff;border:1px solid var(--border2);border-radius:var(--rs);font-family:'Cairo',sans-serif;outline:none;direction:ltr}
+.filter-bar select{padding:7px 11px;font-size:13px;background:var(--bg3);color:#fff;border:1px solid var(--border2);border-radius:var(--rs);font-family:'Cairo',sans-serif;outline:none}
+.fbtn{padding:7px 16px;font-size:13px;font-weight:700;font-family:'Cairo',sans-serif;border-radius:var(--rs);cursor:pointer;border:none;background:var(--accent);color:#fff;transition:all .15s}
+.fbtn:hover{background:var(--accent2)}
+.fbtn.cl{background:var(--bg3);border:1px solid var(--border2);color:#fff}
+.fbtn.cl:hover{background:var(--border2)}
+.shift-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px}
+.shift-card.asc{border-color:#22c55e;box-shadow:0 0 12px rgba(34,197,94,0.1)}
+.sc-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.sc-num{font-size:24px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.sc-user{font-size:15px;font-weight:800;color:#fff}
+.sc-time{font-size:12px;font-weight:600;margin-top:2px;color:var(--text2)}
+.sc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.scs{background:var(--bg3);border-radius:var(--rs);padding:10px;text-align:center}
+.scs-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;color:var(--text2)}
+.scs-v{font-size:18px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#fff}
+.scs-v.gr{color:#22c55e}.scs-v.gd{color:#f59e0b}.scs-v.ac{color:var(--accent)}
+.client-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.cc-info{flex:1}
+.cc-name{font-size:15px;font-weight:700;color:#fff}
+.cc-phone{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text2);margin-top:2px}
+.cc-stats{font-size:12px;color:var(--text3);margin-top:3px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-wrap">
+  <div class="login-box">
+    <div class="login-icon">🧟</div>
+    <div class="login-title">ZOMBIE Gaming</div>
+    <div class="login-sub">Gaming Center</div>
+    <div class="fr"><label class="fl">اسم المستخدم</label>
+      <input class="fi" type="text" id="login-user" placeholder="اكتب اسمك" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="fr" style="margin-top:11px"><label class="fl">كلمة السر</label>
+      <input class="fi" type="password" id="login-pass" placeholder="كلمة السر" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-err" id="login-err"></div>
+    <button onclick="doLogin()" style="width:100%;margin-top:14px;padding:12px;font-size:16px;font-weight:800;font-family:'Cairo',sans-serif;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);cursor:pointer">دخول ▶</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+<div class="wrap">
+<aside class="sb">
+  <div class="sb-brand">
+    <div class="sb-logo">
+      <div class="sb-icon">🧟</div>
+      <div><div class="sb-name">ZOMBIE</div><div class="sb-sub">Gaming Center</div></div>
+    </div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-ulbl">مسجل دخول كـ</div>
+    <div class="sb-uname" id="sb-uname">—</div>
+    <div id="sb-urole"></div>
+  </div>
+  <div class="sb-shift" id="sb-shift-box">
+    <div class="sb-shift-lbl">الوردية</div>
+    <div class="sb-shift-val off" id="sb-shift-val">لا توجد وردية</div>
+  </div>
+  <nav class="sb-nav" id="sb-nav"></nav>
+  <div class="sb-clk">
+    <div class="clk-t" id="clk">12:00:00 ص</div>
+    <div class="clk-d" id="clkd"></div>
+  </div>
+</aside>
+
+<main class="main">
+
+  <!-- DEVICES -->
+  <div id="pg-devices" class="pg on">
+    <div class="ph"><div><div class="pt">الأجهزة</div><div class="ps">مراقبة وإدارة جلسات البلايستيشن</div></div></div>
+    <div class="mets">
+      <div class="met"><div class="met-l">شغالين الآن</div><div class="met-v ac" id="m-busy">0</div><div class="met-s">من الأجهزة</div></div>
+      <div class="met"><div class="met-l">إيرادي اليوم</div><div class="met-v gr" id="m-rev">0</div><div class="met-s">جنيه</div></div>
+      <div class="met"><div class="met-l">جلساتي اليوم</div><div class="met-v" id="m-done">0</div><div class="met-s">جلسة</div></div>
+      <div class="met"><div class="met-l">متوسط الجلسة</div><div class="met-v" id="m-avg">—</div><div class="met-s">دقيقة</div></div>
+    </div>
+    <div class="dg" id="dg"></div>
+  </div>
+
+  <!-- SESSIONS -->
+  <div id="pg-sessions" class="pg">
+    <div class="ph"><div><div class="pt">سجل الجلسات</div><div class="ps" id="sess-sub">جلساتك اليوم</div></div></div>
+    <div class="filter-bar"><label>من</label><input type="date" id="sess-from"><label>إلى</label><input type="date" id="sess-to"><button class="fbtn" onclick="applySessionFilter()">🔍 فلتر</button><button class="fbtn cl" onclick="clearSessionFilter()">✕ اليوم</button></div>
+    <div class="tw"><table>
+      <thead><tr><th>#</th><th>الجهاز</th><th>العميل</th><th>موبايل</th><th>النوع</th><th>البداية</th><th>النهاية</th><th>الدقائق</th><th>الجهاز ج</th><th>مشروبات ج</th><th>الإجمالي</th><th>وردية</th><th>التاريخ</th><th>الأدمن</th></tr></thead>
+      <tbody id="sess-tb"><tr class="emp"><td colspan="13">لا توجد جلسات</td></tr></tbody>
+    </table></div>
+  </div>
+
+  <!-- MY REPORT -->
+  <div id="pg-report" class="pg">
+    <div class="ph"><div><div class="pt">تقريري</div><div class="ps">ملخص أدائك</div></div></div>
+    <div class="filter-bar"><label>من</label><input type="date" id="rep-from"><label>إلى</label><input type="date" id="rep-to"><button class="fbtn" onclick="applyMyRepFilter()">🔍 فلتر</button><button class="fbtn cl" onclick="clearMyRepFilter()">✕ اليوم</button></div>
+    <div class="rg3">
+      <div class="rc" style="margin-bottom:0"><h3>إيراد الأجهزة</h3><div class="rbig gr" id="r-dev-rev">0 ج</div></div>
+      <div class="rc" style="margin-bottom:0"><h3>إيراد المشروبات</h3><div class="rbig gd" id="r-drk-rev">0 ج</div></div>
+      <div class="rc" style="margin-bottom:0"><h3>الإجمالي</h3><div class="rbig wh" id="r-tot">0 ج</div></div>
+    </div>
+    <div style="height:13px"></div>
+    <div class="rc"><h3>عدد جلساتي</h3><div class="rbig" id="r-cnt">0</div></div>
+    <div class="rc"><h3>استخدام الأجهزة</h3><div id="r-bars"><p style="font-size:13px;color:var(--text3)">لا توجد بيانات</p></div></div>
+    <div style="font-size:15px;font-weight:800;margin-bottom:11px;color:#fff">تفصيل حسب النوع</div>
+    <div class="tw"><table>
+      <thead><tr><th>نوع الجلسة</th><th>عدد الجلسات</th><th>إيراد الأجهزة</th><th>إيراد المشروبات</th><th>الإجمالي</th></tr></thead>
+      <tbody id="r-types"><tr class="emp"><td colspan="5">لا توجد بيانات</td></tr></tbody>
+    </table></div>
+  </div>
+
+  <!-- ADMIN REPORT -->
+  <div id="pg-admin-report" class="pg">
+    <div class="ph"><div><div class="pt">التقرير الكامل</div><div class="ps">جميع المسؤولين — للأدمن فقط</div></div></div>
+    <div class="filter-bar"><label>من</label><input type="date" id="ar-from"><label>إلى</label><input type="date" id="ar-to"><button class="fbtn" onclick="applyARFilter()">🔍 فلتر</button><button class="fbtn cl" onclick="clearARFilter()">✕ اليوم</button></div>
+    <div class="rg4">
+      <div class="rc" style="margin-bottom:0"><h3>إيراد الأجهزة</h3><div class="rbig gr" id="ar-dev">0 ج</div></div>
+      <div class="rc" style="margin-bottom:0"><h3>إيراد المشروبات</h3><div class="rbig gd" id="ar-drk">0 ج</div></div>
+      <div class="rc" style="margin-bottom:0"><h3>الإجمالي الكلي</h3><div class="rbig wh" id="ar-tot">0 ج</div></div>
+      <div class="rc" style="margin-bottom:0"><h3>عدد الجلسات</h3><div class="rbig" id="ar-cnt">0</div></div>
+    </div>
+    <div style="height:13px"></div>
+    <div class="rtabs" id="report-tabs"></div>
+    <div id="report-content"></div>
+  </div>
+
+  <!-- DATA MANAGEMENT -->
+  <div id="pg-data" class="pg">
+    <div class="ph"><div><div class="pt">إدارة البيانات</div><div class="ps">سحب وتفريغ بيانات — للأدمن فقط</div></div></div>
+    <div class="db-info"><div class="db-dot"></div><span id="db-info-txt">قاعدة البيانات: IndexedDB</span></div>
+    <div class="period-box">
+      <h3>📥 سحب بيانات لفترة معينة</h3>
+      <p>اختار الفترة وهينزل ملف Excel كامل بكل الجلسات لجميع المسؤولين.</p>
+      <div class="date-row">
+        <div class="fr" style="margin-bottom:0"><label class="fl">من تاريخ</label><input class="fi" type="date" id="ex-from"></div>
+        <div class="fr" style="margin-bottom:0"><label class="fl">إلى تاريخ</label><input class="fi" type="date" id="ex-to"></div>
+      </div>
+      <div class="period-actions" style="margin-top:11px">
+        <button class="pab sc" onclick="setPQ('today')">اليوم</button>
+        <button class="pab sc" onclick="setPQ('week')">آخر أسبوع</button>
+        <button class="pab sc" onclick="setPQ('month')">آخر شهر</button>
+        <button class="pab pr" onclick="exportPeriod()">⬇ سحب Excel</button>
+      </div>
+      <div class="period-result" id="ex-result"></div>
+    </div>
+    <div class="period-box" style="border-color:rgba(239,68,68,0.22)">
+      <h3>🗑 تفريغ بيانات لفترة معينة</h3>
+      <p>⚠ تأكد إنك سحبت Excel الأول. الحذف نهائي.</p>
+      <div class="date-row">
+        <div class="fr" style="margin-bottom:0"><label class="fl">من تاريخ</label><input class="fi" type="date" id="cl-from"></div>
+        <div class="fr" style="margin-bottom:0"><label class="fl">إلى تاريخ</label><input class="fi" type="date" id="cl-to"></div>
+      </div>
+      <div class="period-actions" style="margin-top:11px">
+        <button class="pab sc" onclick="setPQ('today','cl')">اليوم</button>
+        <button class="pab sc" onclick="setPQ('week','cl')">آخر أسبوع</button>
+        <button class="pab sc" onclick="setPQ('month','cl')">آخر شهر</button>
+        <button class="pab danger" onclick="clearPeriod()">🗑 تفريغ الفترة</button>
+      </div>
+      <div class="period-result" id="cl-result"></div>
+    </div>
+    <div class="rc">
+      <h3>إحصائيات قاعدة البيانات</h3>
+      <div class="stats-inline">
+        <div class="si">إجمالي الجلسات: <span id="stat-total">—</span></div>
+        <div class="si">أقدم جلسة: <span id="stat-oldest">—</span></div>
+        <div class="si">أحدث جلسة: <span id="stat-newest">—</span></div>
+        <div class="si">إجمالي الإيراد: <span id="stat-rev">—</span></div>
+      </div>
+    </div>
+
+    <div class="period-box" style="border-color:rgba(34,197,94,0.25)">
+      <h3>💾 نسخ احتياطي كامل (Backup & Restore)</h3>
+      <p>سحب كل البيانات (جلسات + عملاء + إعدادات) في ملف JSON تحتفظ بيه. لو فتحت البرنامج يوم وملقتش الداتا ارجعها بضغطة.</p>
+      <div class="period-actions">
+        <button class="pab pr" onclick="exportBackup()">💾 سحب Backup كامل</button>
+        <label class="pab sc" style="cursor:pointer">
+          📂 استعادة من Backup
+          <input type="file" id="restore-file" accept=".json" style="display:none" onchange="importBackup(this)">
+        </label>
+      </div>
+      <div class="period-result" id="backup-result"></div>
+      <div id="backup-preview" style="display:none;margin-top:12px;background:var(--bg3);border-radius:var(--rs);padding:12px;font-size:13px;font-weight:600">
+        <div id="backup-preview-content"></div>
+        <div class="period-actions" style="margin-top:12px">
+          <button class="pab pr" onclick="confirmRestore()">✓ تأكيد الاستعادة</button>
+          <button class="pab sc" onclick="cancelRestore()">إلغاء</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div id="pg-users" class="pg">
+    <div class="ph">
+      <div><div class="pt">المستخدمين</div><div class="ps">إضافة وتعديل وحذف المسؤولين</div></div>
+      <button onclick="openAddUser()" style="padding:9px 18px;font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);cursor:pointer">+ إضافة</button>
+    </div>
+    <div id="users-list"></div>
+  </div>
+
+  <!-- DEVICES SETTINGS -->
+  <div id="pg-devices-set" class="pg">
+    <div class="ph"><div><div class="pt">إدارة الأجهزة</div><div class="ps">إضافة وحذف الأجهزة</div></div></div>
+    <div class="set-panel">
+      <h3>🕹 الأجهزة الحالية</h3>
+      <div id="devices-set-list"></div>
+      <div class="add-row">
+        <input class="fi" type="text" id="new-dev-name" placeholder="اسم الجهاز (مثال: PS5-3)">
+        <select class="fi" id="new-dev-type" style="flex:0 0 110px">
+          <option value="PS5">PS5</option><option value="PS4">PS4</option>
+        </select>
+        <button class="add-btn" onclick="addDevice()">+ إضافة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICES SETTINGS -->
+  <div id="pg-prices" class="pg">
+    <div class="ph"><div><div class="pt">أسعار الساعات</div><div class="ps">تحديد سعر الساعة لكل نوع</div></div></div>
+    <div class="set-panel">
+      <h3>💰 أسعار PS5</h3>
+      <div id="prices-ps5-list"></div>
+    </div>
+    <div class="set-panel">
+      <h3>💰 أسعار PS4</h3>
+      <div id="prices-ps4-list"></div>
+    </div>
+    <div style="margin-top:4px">
+      <button onclick="savePrices()" style="padding:10px 28px;font-size:15px;font-weight:700;font-family:'Cairo',sans-serif;background:var(--green);color:#000;border:none;border-radius:var(--rs);cursor:pointer">✓ حفظ الأسعار</button>
+    </div>
+  </div>
+
+  <!-- DRINKS SETTINGS -->
+  <div id="pg-drinks" class="pg">
+    <div class="ph"><div><div class="pt">أصناف المشروبات</div><div class="ps">إضافة وحذف المشروبات وأسعارها</div></div></div>
+    <div class="set-panel">
+      <h3>🥤 المشروبات الحالية</h3>
+      <div id="drinks-list"></div>
+      <div class="add-row">
+        <input class="fi" type="text" id="new-drk-name" placeholder="اسم المشروب">
+        <input class="fi" type="number" id="new-drk-price" placeholder="السعر" style="flex:0 0 110px">
+        <button class="add-btn green" onclick="addDrink()">+ إضافة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRANDING SETTINGS -->
+  <div id="pg-branding" class="pg">
+    <div class="ph"><div><div class="pt">إعدادات السنتر</div><div class="ps">اسم السنتر واللوجو</div></div></div>
+    <div class="set-panel">
+      <h3>🎨 هوية السنتر</h3>
+      <div class="fr">
+        <label class="fl">اسم السنتر الرئيسي</label>
+        <input class="fi" type="text" id="brand-name" placeholder="مثال: ZOMBIE Gaming">
+      </div>
+      <div class="fr">
+        <label class="fl">الاسم الفرعي</label>
+        <input class="fi" type="text" id="brand-sub" placeholder="مثال: Gaming Center">
+      </div>
+      <div class="fr">
+        <label class="fl">اللوجو (إيموجي)</label>
+        <input class="fi" type="text" id="brand-logo" placeholder="مثال: 🧟 أو 🎮 أو ⚡" oninput="document.getElementById('brand-preview').textContent=this.value||'🧟'">
+        <div style="margin-top:10px;font-size:14px;font-weight:700;color:#fff">معاينة: <span id="brand-preview" style="font-size:32px;vertical-align:middle">🧟</span></div>
+      </div>
+      <div class="fr">
+        <label class="fl">لون التمييز</label>
+        <div style="display:flex;gap:12px;align-items:center">
+          <input type="color" id="brand-color" value="#0070D1" style="width:54px;height:44px;border:none;border-radius:9px;cursor:pointer;background:transparent" oninput="document.getElementById('brand-color-val').textContent=this.value">
+          <span id="brand-color-val" style="font-family:'JetBrains Mono',monospace;font-size:15px;color:#fff;font-weight:700">#0070D1</span>
+        </div>
+      </div>
+      <button onclick="saveBranding()" style="padding:11px 28px;font-size:15px;font-weight:800;font-family:'Cairo',sans-serif;background:var(--green);color:#000;border:none;border-radius:var(--rs);cursor:pointer;margin-top:6px">✓ حفظ وتطبيق</button>
+      <div id="brand-msg" style="font-size:13px;color:var(--green);margin-top:8px;min-height:16px;font-weight:700"></div>
+    </div>
+  </div>
+
+  <!-- TELEGRAM NOTIFICATIONS -->
+  <div id="pg-telegram" class="pg">
+    <div class="ph"><div><div class="pt">إشعارات Telegram</div><div class="ps">ربط البرنامج ببوت تيليجرام — للأدمن فقط</div></div></div>
+
+    <div class="set-panel">
+      <h3>🤖 إعداد البوت</h3>
+
+      <div style="background:var(--bg3);border-radius:var(--rs);padding:14px;margin-bottom:16px;border:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:8px">خطوات الإعداد:</div>
+        <div style="font-size:13px;font-weight:600;line-height:2;color:#fff">
+          1️⃣ افتح Telegram وابحث عن <span style="color:var(--accent);font-family:'JetBrains Mono',monospace">@BotFather</span><br>
+          2️⃣ ابعتله <span style="color:var(--green);font-family:'JetBrains Mono',monospace">/newbot</span> واتبع التعليمات<br>
+          3️⃣ هيديك Token احفظه هنا<br>
+          4️⃣ ابحث عن <span style="color:var(--accent);font-family:'JetBrains Mono',monospace">@userinfobot</span> وابعتله أي رسالة علشان تعرف الـ Chat ID بتاعك<br>
+          5️⃣ ابعت رسالة للبوت بتاعك أول مرة علشان يقدر يبعتلك
+        </div>
+      </div>
+
+      <div class="fr">
+        <label class="fl">Bot Token</label>
+        <input class="fi" type="text" id="tg-token" placeholder="1234567890:ABCdefGHI..." style="font-family:'JetBrains Mono',monospace;font-size:13px">
+      </div>
+      <div class="fr">
+        <label class="fl">Chat ID (معرفك على تيليجرام)</label>
+        <input class="fi" type="text" id="tg-chatid" placeholder="123456789" style="font-family:'JetBrains Mono',monospace;font-size:13px">
+      </div>
+
+      <div class="fr">
+        <label class="fl">الإشعارات المفعّلة</label>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:600;color:#fff">
+            <input type="checkbox" id="tg-on-start" checked style="width:18px;height:18px;accent-color:var(--green)"> 🟢 لما تبدأ جلسة
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:600;color:#fff">
+            <input type="checkbox" id="tg-on-end" checked style="width:18px;height:18px;accent-color:var(--red)"> 🔴 لما تخلص جلسة
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;font-weight:600;color:#fff">
+            <input type="checkbox" id="tg-hourly" checked style="width:18px;height:18px;accent-color:var(--accent)"> 📊 ملخص كل ساعة
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap">
+        <button onclick="saveTgSettings()" style="padding:10px 22px;font-size:14px;font-weight:800;font-family:'Cairo',sans-serif;background:var(--green);color:#000;border:none;border-radius:var(--rs);cursor:pointer">✓ حفظ الإعدادات</button>
+        <button onclick="testTelegram()" style="padding:10px 22px;font-size:14px;font-weight:800;font-family:'Cairo',sans-serif;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);cursor:pointer">📨 إرسال رسالة تجريبية</button>
+      </div>
+      <div id="tg-msg" style="font-size:13px;font-weight:700;margin-top:10px;min-height:16px"></div>
+    </div>
+
+    <div class="set-panel">
+      <h3>📋 شكل الرسائل</h3>
+      <div style="background:var(--bg3);border-radius:var(--rs);padding:14px;font-size:13px;font-weight:600;line-height:2;color:#fff;border:1px solid var(--border)">
+        <div style="color:var(--green);font-weight:800;margin-bottom:6px">🟢 رسالة بداية الجلسة:</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#dde">
+          🟢 جلسة جديدة بدأت<br>
+          🕹 الجهاز: PS5-1<br>
+          👤 العميل: أحمد<br>
+          🎮 نوع اللعب: فردى<br>
+          ⏰ وقت البداية: 03:30 م<br>
+          👮 الأدمن: زياد
+        </div>
+        <div style="color:var(--red);font-weight:800;margin:12px 0 6px">🔴 رسالة نهاية الجلسة:</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#dde">
+          🔴 جلسة انتهت<br>
+          🕹 الجهاز: PS5-1 | ⏱ المدة: 45 دقيقة<br>
+          💰 الجهاز: 35 ج | 🥤 مشروبات: 15 ج<br>
+          💵 الإجمالي: 50 ج
+        </div>
+        <div style="color:var(--accent);font-weight:800;margin:12px 0 6px">📊 الملخص الساعوي:</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#dde">
+          📊 ملخص 03:00 م<br>
+          🟢 شغالين: 3 أجهزة<br>
+          ✅ جلسات مكتملة: 8<br>
+          💵 إيراد اليوم: 350 ج
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHIFTS -->
+  <div id="pg-shifts" class="pg">
+    <div class="ph"><div><div class="pt">الورديات</div><div class="ps" id="shifts-sub">سجل الورديات</div></div></div>
+    <div id="shift-current-bar"></div>
+    <div class="filter-bar">
+      <label>من</label><input type="date" id="sh-from">
+      <label>إلى</label><input type="date" id="sh-to">
+      <select id="sh-user-sel"><option value="">كل المسؤولين</option></select>
+      <button class="fbtn" onclick="renderShifts()">🔍 فلتر</button>
+      <button class="fbtn cl" onclick="clearShiftFilter()">✕ مسح</button>
+    </div>
+    <div id="shifts-list"></div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div id="pg-clients" class="pg">
+    <div class="ph">
+      <div><div class="pt">العملاء</div><div class="ps">سجل العملاء المحفوظين</div></div>
+      <div style="display:flex;gap:8px">
+        <button onclick="toggleClientSort()" id="sort-btn" style="padding:8px 14px;font-size:13px;font-weight:700;font-family:Cairo,sans-serif;background:var(--bg3);color:#fff;border:1px solid var(--border2);border-radius:var(--rs);cursor:pointer">🔢 ترتيب بالجلسات</button>
+        <button onclick="openAddClientModal()" style="padding:8px 14px;font-size:13px;font-weight:700;font-family:Cairo,sans-serif;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);cursor:pointer">+ إضافة عميل</button>
+      </div>
+    </div>
+    <div id="clients-list"></div>
+  </div>
+
+</main>
+</div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Start Session -->
+<div id="ov-start" class="ov" onclick="if(event.target===this)cs()">
+  <div class="modal">
+    <div class="mtit">▶ بدء جلسة جديدة</div>
+    <div class="fr"><label class="fl">الجهاز</label><select class="fs" id="m-dev" onchange="updateRI()"></select></div>
+    <div class="fr">
+      <label class="fl">موبايل العميل (اختياري)</label>
+      <div class="fi-row">
+        <input class="fi" type="tel" id="m-phone" placeholder="01xxxxxxxxx" oninput="lookupClient(this.value)">
+      </div>
+      <div id="client-hint" style="margin-top:6px;display:none" class="client-hint"></div>
+    </div>
+    <div class="fr">
+      <label class="fl">اسم العميل</label>
+      <div class="fi-row">
+        <input class="fi" type="text" id="m-cli" placeholder="اختياري">
+        <button id="m-add-client-btn" onclick="quickAddClient()" style="display:none;padding:8px 12px;font-size:12px;font-weight:700;font-family:'Cairo',sans-serif;background:var(--green);color:#000;border:none;border-radius:var(--rs);cursor:pointer;white-space:nowrap">+ حفظ</button>
+      </div>
+    </div>
+    <div class="fr"><label class="fl">نوع اللعب</label>
+      <select class="fs" id="m-game" onchange="updateRI()" required>
+        <option value="" disabled selected>-- اختار النوع --</option>
+        <option value="فردى">فردى</option><option value="ملتي">ملتي</option>
+      </select>
+    </div>
+    <div class="fr"><label class="fl">نوع المدة</label>
+      <select class="fs" id="m-dt" onchange="toggleFx()">
+        <option value="مدة مفتوحة">مفتوحة</option><option value="مدة محددة">محددة</option>
+      </select>
+    </div>
+    <div class="fr" id="fx-row" style="display:none"><label class="fl">عدد الدقائق</label><input class="fi" type="number" id="m-fx" value="60" min="15" step="15"></div>
+    <div class="ri">سعر الساعة: <span id="ri-v">35</span> جنيه</div>
+    <div class="mbs"><button onclick="cs()">إلغاء</button><button class="ok-g" onclick="confirmStart()">▶ ابدأ الجلسة</button></div>
+  </div>
+</div>
+
+<!-- Add Drinks to Active Session -->
+<div id="ov-drinks" class="ov" onclick="if(event.target===this)closeDrinksModal()">
+  <div class="modal">
+    <div class="mtit">🥤 إضافة مشروبات</div>
+    <p id="drinks-dev-label" style="font-size:13px;color:var(--text2);margin-bottom:12px"></p>
+    <div class="drink-list-modal" id="drinks-modal-list"></div>
+    <div class="bdiv"></div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;padding:4px 0">
+      <span>إجمالي المشروبات</span>
+      <span id="drinks-modal-total" style="color:var(--amber);font-family:'JetBrains Mono',monospace">0 ج</span>
+    </div>
+    <div class="mbs"><button onclick="closeDrinksModal()">إلغاء</button><button class="ok" onclick="confirmDrinks()">✓ إضافة</button></div>
+  </div>
+</div>
+
+<!-- End Session -->
+<div id="ov-end" class="ov" onclick="if(event.target===this)ce()">
+  <div class="modal">
+    <div class="mtit">⏹ إنهاء الجلسة</div>
+    <p id="bill-dev" style="font-size:13px;color:var(--text2);margin-bottom:12px"></p>
+    <div class="bdiv"></div>
+    <div id="bill-rows"></div>
+    <div class="bdiv"></div>
+    <div class="btot"><span>الإجمالي الكلي</span><span class="bv" id="bill-grand">0 ج</span></div>
+    <div class="mbs"><button onclick="ce()">إلغاء</button><button class="dng" onclick="confirmEnd()">✓ تأكيد وإنهاء</button></div>
+  </div>
+</div>
+
+<!-- User Modal -->
+<div id="ov-user" class="ov" onclick="if(event.target===this)closeUserModal()">
+  <div class="modal">
+    <div class="mtit" id="um-title">➕ إضافة مستخدم</div>
+    <div class="fr"><label class="fl">اسم المستخدم</label><input class="fi" type="text" id="um-name" placeholder="الاسم"></div>
+    <div class="fr"><label class="fl">كلمة السر</label><input class="fi" type="text" id="um-pass" placeholder="كلمة السر"></div>
+    <div class="fr"><label class="fl">الصلاحية</label>
+      <select class="fs" id="um-role"><option value="user">مسؤول عادي</option><option value="admin">أدمن</option></select>
+    </div>
+    <div id="um-err" style="font-size:13px;color:var(--red);min-height:15px;margin-top:4px;font-weight:600"></div>
+    <div class="mbs"><button onclick="closeUserModal()">إلغاء</button><button class="ok" id="um-btn" onclick="saveUser()">حفظ</button></div>
+  </div>
+</div>
+
+<!-- Change Pass -->
+<div id="ov-chpass" class="ov" onclick="if(event.target===this)closeChPass()">
+  <div class="modal">
+    <div class="mtit">🔑 تغيير كلمة السر</div>
+    <p id="chp-name" style="font-size:14px;color:var(--text2);margin-bottom:14px"></p>
+    <div class="fr"><label class="fl">كلمة السر الجديدة</label><input class="fi" type="text" id="chp-new" placeholder="الكلمة الجديدة"></div>
+    <div class="mbs"><button onclick="closeChPass()">إلغاء</button><button class="ok" onclick="confirmChPass()">حفظ</button></div>
+  </div>
+</div>
+
+<!-- Confirm Clear -->
+<div id="ov-confirm-clear" class="ov">
+  <div class="modal">
+    <div class="mtit">⚠ تأكيد التفريغ</div>
+    <p id="cc-msg" style="font-size:14px;color:var(--text2);margin-bottom:10px;line-height:1.7"></p>
+    <p style="font-size:13px;color:var(--red);margin-bottom:5px;font-weight:600">⚠ هذا الإجراء لا يمكن التراجع عنه!</p>
+    <p style="font-size:13px;color:var(--amber);font-weight:600">تأكدت إنك سحبت Excel الأول؟</p>
+    <div class="mbs">
+      <button onclick="document.getElementById('ov-confirm-clear').classList.remove('open')">إلغاء</button>
+      <button class="dng" id="cc-confirm-btn">🗑 نعم، فرّغ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Client Modal -->
+<div id="ov-add-client" class="ov" onclick="if(event.target===this)closeAddClientModal()">
+  <div class="modal">
+    <div class="mtit">👤 إضافة عميل جديد</div>
+    <div class="fr"><label class="fl">رقم الموبايل</label><input class="fi" type="tel" id="ac-phone" placeholder="01xxxxxxxxx"></div>
+    <div class="fr"><label class="fl">الاسم</label><input class="fi" type="text" id="ac-name" placeholder="اسم العميل"></div>
+    <div class="mbs"><button onclick="closeAddClientModal()">إلغاء</button><button class="ok" onclick="saveNewClient()">✓ حفظ</button></div>
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+
+<script>
+// ══════════════════════════════════════════
+// Firebase — loaded after app init
+// ══════════════════════════════════════════
+FB.loadQueue();
+
+
+// ══════════════════════════════════════════
+// IndexedDB
+// ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// Firebase REST API — replaces IndexedDB
+// ══════════════════════════════════════════
+const S_SESS='sessions',S_USERS='users',S_DEVICES='devices',S_PRICES='prices',S_DRINKS='drinks',S_CLIENTS='clients',S_SETTINGS='settings',S_SHIFTS='shifts',S_AUTH='auth_devices',S_CODES='act_codes';
+const SW_USER='software_admin',SW_PASS='Dd130687$$';
+const FB_PROJECT='play-station-center';
+const FB_KEY='AIzaSyDMzEJdOTiVt8sx4hiJe7R3XLCDngh4xBk';
+const FB_BASE='https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default)/documents';
+const FB_QUERY='https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default)/documents:runQuery?key='+FB_KEY;
+
+// Default data (seeded on first run)
+const DEFAULT_USERS=[{name:'admin',pass:'admin123',role:'admin'},{name:'أحمد',pass:'294',role:'user'},{name:'زياد',pass:'1234',role:'user'},{name:'مهند',pass:'1234',role:'user'}];
+const DEFAULT_DEVICES=[{id:'PS5-1',type:'PS5'},{id:'PS5-2',type:'PS5'},{id:'PS4-1',type:'PS4'},{id:'PS4-2',type:'PS4'},{id:'PS4-3',type:'PS4'}];
+const DEFAULT_PRICES=[{key:'PS5_فردى',val:35},{key:'PS5_ملتي',val:40},{key:'PS4_فردى',val:25},{key:'PS4_ملتي',val:35}];
+const DEFAULT_DRINKS=[{name:'مياه',price:5},{name:'بيبسي',price:10},{name:'عصير',price:15}];
+
+// ── Firestore type converters ──────────────────────────────────────────────
+function toFSVal(v){
+  if(v===null||v===undefined) return {nullValue:null};
+  if(typeof v==='boolean') return {booleanValue:v};
+  if(typeof v==='number') return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
+  if(typeof v==='string') return {stringValue:v};
+  if(v instanceof Date) return {timestampValue:v.toISOString()};
+  if(Array.isArray(v)) return {arrayValue:{values:v.map(toFSVal)}};
+  if(typeof v==='object') return {mapValue:{fields:toFSFields(v)}};
+  return {stringValue:String(v)};
+}
+function toFSFields(obj){
+  var f={};
+  Object.keys(obj).forEach(function(k){f[k]=toFSVal(obj[k]);});
+  return f;
+}
+function fromFSVal(v){
+  if(!v) return null;
+  if('nullValue' in v) return null;
+  if('booleanValue' in v) return v.booleanValue;
+  if('integerValue' in v) return parseInt(v.integerValue);
+  if('doubleValue' in v) return parseFloat(v.doubleValue);
+  if('stringValue' in v) return v.stringValue;
+  if('timestampValue' in v) return v.timestampValue;
+  if('arrayValue' in v) return (v.arrayValue.values||[]).map(fromFSVal);
+  if('mapValue' in v) return fromFSFields(v.mapValue.fields||{});
+  return null;
+}
+function fromFSFields(fields){
+  var obj={};
+  if(!fields) return obj;
+  Object.keys(fields).forEach(function(k){obj[k]=fromFSVal(fields[k]);});
+  return obj;
+}
+
+// ── Key paths for each collection ──────────────────────────────────────────
+function getKeyPath(store){
+  if(store===S_SESS) return 'tx';
+  if(store===S_USERS) return 'name';
+  if(store===S_DEVICES) return 'id';
+  if(store===S_PRICES) return 'key';
+  if(store===S_DRINKS) return 'name';
+  if(store===S_CLIENTS) return 'phone';
+  if(store===S_SETTINGS) return 'key';
+  if(store===S_SHIFTS) return 'id';
+  if(store===S_AUTH) return 'token';
+  if(store===S_CODES) return 'code';
+  return 'id';
+}
+
+// ── Firebase REST idb replacement ──────────────────────────────────────────
+const idb={
+  getAll: async function(store){
+    try{
+      var url=FB_BASE+'/'+store+'?key='+FB_KEY+'&pageSize=1000';
+      var r=await fetch(url);
+      if(!r.ok) return [];
+      var data=await r.json();
+      if(!data.documents) return [];
+      return data.documents.map(function(doc){ return fromFSFields(doc.fields); });
+    }catch(e){ console.warn('idb.getAll',store,e); return []; }
+  },
+
+  get: async function(store,key){
+    try{
+      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(String(key))+'?key='+FB_KEY;
+      var r=await fetch(url);
+      if(!r.ok) return undefined;
+      var doc=await r.json();
+      return fromFSFields(doc.fields);
+    }catch(e){ return undefined; }
+  },
+
+  add: async function(store,obj){
+    var kp=getKeyPath(store);
+    var docId;
+    if(store===S_SESS||store===S_SHIFTS){
+      docId=Date.now()+'_'+Math.random().toString(36).slice(2,6);
+      obj[kp]=store===S_SESS?parseInt(Date.now()):parseInt(Date.now());
+      // Use numeric timestamp as the key
+      docId=String(obj[kp]);
+    } else {
+      docId=String(obj[kp]);
+    }
+    try{
+      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(docId)+'?key='+FB_KEY;
+      await fetch(url,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:toFSFields(obj)})});
+      return obj[kp];
+    }catch(e){ console.warn('idb.add',store,e); throw e; }
+  },
+
+  put: async function(store,obj){
+    var kp=getKeyPath(store);
+    var docId=String(obj[kp]);
+    try{
+      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(docId)+'?key='+FB_KEY;
+      await fetch(url,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:toFSFields(obj)})});
+      return obj[kp];
+    }catch(e){ console.warn('idb.put',store,e); throw e; }
+  },
+
+  del: async function(store,key){
+    try{
+      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(String(key))+'?key='+FB_KEY;
+      await fetch(url,{method:'DELETE'});
+    }catch(e){ console.warn('idb.del',store,e); }
+  },
+
+  range: async function(from,to){
+    try{
+      var body={structuredQuery:{from:[{collectionId:S_SESS}],
+        where:{compositeFilter:{op:'AND',filters:[
+          {fieldFilter:{field:{fieldPath:'date'},op:'GREATER_THAN_OR_EQUAL',value:{stringValue:from}}},
+          {fieldFilter:{field:{fieldPath:'date'},op:'LESS_THAN_OR_EQUAL',value:{stringValue:to}}}
+        ]}},
+        orderBy:[{field:{fieldPath:'start'},direction:'DESCENDING'}],
+        limit:2000
+      }};
+      var r=await fetch(FB_QUERY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      var data=await r.json();
+      return (Array.isArray(data)?data:[]).filter(function(d){return d.document;}).map(function(d){return fromFSFields(d.document.fields);});
+    }catch(e){ console.warn('idb.range',e); return []; }
+  },
+
+  delRange: async function(from,to){
+    var sessions=await idb.range(from,to);
+    for(var i=0;i<sessions.length;i++){
+      await idb.del(S_SESS,sessions[i].tx);
+    }
+    return sessions.length;
+  }
+};
+
+// ── First run: seed default data ───────────────────────────────────────────
+async function initFirestore(){
+  try{
+    // Check if already initialized
+    var init=await idb.get(S_SETTINGS,'initialized');
+    if(init) return;
+    // Seed defaults
+    for(var u of DEFAULT_USERS) await idb.put(S_USERS,u);
+    for(var d of DEFAULT_DEVICES) await idb.put(S_DEVICES,d);
+    for(var p of DEFAULT_PRICES) await idb.put(S_PRICES,p);
+    for(var dr of DEFAULT_DRINKS) await idb.put(S_DRINKS,dr);
+    await idb.put(S_SETTINGS,{key:'initialized',val:true});
+    console.log('Firestore seeded with default data');
+  }catch(e){ console.warn('initFirestore:',e); }
+}
+
+// ══════════════════════════════════════════
+// State
+// ══════════════════════════════════════════
+let DEVICES=[],PRICES={},DRINK_ITEMS=[];
+let active={};
+let currentShift=null;// {devId:{start,who,client,phone,game,dt,drinks:[{name,price,qty}]}}
+let currentUser=null;
+let todaySessions=[];
+let endDev=null,editingUser=null,chPassUser=null,drinksDev=null;
+let pollTimer=null,reportTab='all';
+
+// ══════════════════════════════════════════
+// Helpers
+// ══════════════════════════════════════════
+const pad=n=>String(n).padStart(2,'0');
+const fmtE=ms=>{const s=Math.floor(ms/1000);return pad(Math.floor(s/3600))+':'+pad(Math.floor((s%3600)/60))+':'+pad(s%60)};
+const fmtT12=ts=>{
+  const d=new Date(ts);let h=d.getHours();const m=pad(d.getMinutes());const ap=h>=12?'م':'ص';
+  h=h%12||12;return pad(h)+':'+m+' '+ap;
+};
+const fmtDate=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const todayStr=()=>fmtDate(Date.now());
+const getRate=(id,g)=>{const d=DEVICES.find(x=>x.id===id);return PRICES[d.type+'_'+g]||0};
+const getType=id=>(DEVICES.find(x=>x.id===id)||{type:'PS4'}).type;
+const drinksTotal=arr=>(arr||[]).reduce((s,x)=>s+x.price*x.qty,0);
+
+// ══════════════════════════════════════════
+// Clock (12h Arabic)
+// ══════════════════════════════════════════
+function updateClock(){
+  const n=new Date(),p=v=>String(v).padStart(2,'0');
+  let h=n.getHours();const m=p(n.getMinutes()),s=p(n.getSeconds());
+  const ap=h>=12?'م':'ص';h=h%12||12;
+  document.getElementById('clk').textContent=p(h)+':'+m+':'+s+' '+ap;
+  const days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  document.getElementById('clkd').textContent=days[n.getDay()]+' '+n.toLocaleDateString('ar-EG');
+}
+setInterval(updateClock,1000);updateClock();
+
+// ══════════════════════════════════════════
+// Load master data
+// ══════════════════════════════════════════
+async function loadMasterData(){
+  DEVICES=await idb.getAll(S_DEVICES);
+  const prArr=await idb.getAll(S_PRICES);
+  PRICES={};prArr.forEach(p=>PRICES[p.key]=p.val);
+  DRINK_ITEMS=await idb.getAll(S_DRINKS);
+}
+
+async function loadTodaySessions(){
+  todaySessions=await idb.range(todayStr(),todayStr());
+  todaySessions.sort((a,b)=>b.start-a.start);
+}
+
+// ══════════════════════════════════════════
+// Login / Logout
+// ══════════════════════════════════════════
+async function doLogin(){
+  const name=document.getElementById('login-user').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const errEl=document.getElementById('login-err');
+  // Check if locked to specific user
+  const _locked=localStorage.getItem('zb_locked_user');
+  if(_locked && name!==_locked){
+    errEl.textContent='⚠ البرنامج مقفل ليوزر: '+_locked+' — في جلسات أو وردية مفتوحة';
+    return;
+  }
+  const users=await idb.getAll(S_USERS);
+  const u=users.find(x=>x.name===name&&x.pass===pass);
+  if(!u){errEl.textContent='اسم المستخدم أو كلمة السر غلط';return}
+  document.getElementById('login-err').textContent='';
+  currentUser=u;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  await loadMasterData();
+  await loadTodaySessions();
+  await loadBranding();
+  await loadTgConfig();
+  await loadCurrentShift();
+  sessionStorage.setItem('zb_sess_user',JSON.stringify(currentUser));
+  await restoreUserSessions();
+  buildSidebar();
+  initDevGrid();
+  startPoll();
+  updateDBInfo();
+}
+
+function doLogout(){
+  if(Object.keys(active).length>0){
+    toast('⚠ في جلسات مفتوحة — أنهيها الأول','err');return;
+  }
+  if(currentShift){
+    toast('⚠ في وردية مفتوحة — أنهيها الأول','err');return;
+  }
+  if(!confirm('هتسجل خروج؟'))return;
+  clearInterval(pollTimer);active={};currentUser=null;todaySessions=[];currentShift=null;
+  clearState();
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-user').value='';
+}
+
+// ══════════════════════════════════════════
+// Sidebar
+// ══════════════════════════════════════════
+function buildSidebar(){
+  const isAdmin=currentUser.role==='admin';
+  document.getElementById('sb-uname').textContent=currentUser.name;
+  document.getElementById('sb-urole').innerHTML=isAdmin
+    ?'<span style="color:var(--gold);font-size:13px;font-weight:700">👑 أدمن</span>'
+    :'<span style="color:var(--accent);font-size:13px;font-weight:700">🎮 مسؤول</span>';
+  const nav=document.getElementById('sb-nav');nav.innerHTML='';
+  const pages=[
+    {id:'devices',ic:'🕹',lbl:'الأجهزة',always:true},
+    {id:'sessions',ic:'📋',lbl:'سجل الجلسات',always:true},
+    {id:'report',ic:'📊',lbl:'تقريري',always:true},
+    {id:'admin-report',ic:'📈',lbl:'التقرير الكامل',admin:true},
+    {id:'data',ic:'🗄',lbl:'إدارة البيانات',admin:true},
+    {id:'shifts',ic:'🔄',lbl:'الورديات',always:true},
+    {id:'clients',ic:'👤',lbl:'العملاء',always:true},
+    {id:'devices-set',ic:'⚙',lbl:'إعداد الأجهزة',admin:true},
+    {id:'prices',ic:'💰',lbl:'الأسعار',admin:true},
+    {id:'drinks',ic:'🥤',lbl:'المشروبات',admin:true},
+    {id:'branding',ic:'🎨',lbl:'إعدادات السنتر',admin:true},
+    {id:'telegram',ic:'✈',lbl:'إشعارات Telegram',admin:true},
+    {id:'users',ic:'👥',lbl:'المستخدمين',admin:true},
+  ];
+  pages.forEach(p=>{
+    if(p.admin&&!isAdmin)return;
+    const btn=document.createElement('button');
+    btn.className='nb'+(p.id==='devices'?' on':'');
+    btn.innerHTML=`<span class="nb-ic">${p.ic}</span> ${p.lbl}`;
+    btn.onclick=()=>showPage(p.id,btn);btn.dataset.page=p.id;nav.appendChild(btn);
+  });
+  const sep=document.createElement('div');sep.className='nav-sep';nav.appendChild(sep);
+  const lo=document.createElement('button');lo.className='nb';
+  lo.innerHTML='<span class="nb-ic">🔒</span> تسجيل خروج';lo.onclick=doLogout;nav.appendChild(lo);
+}
+
+function showPage(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  const pg=document.getElementById('pg-'+id);if(pg)pg.classList.add('on');
+  if(btn)btn.classList.add('on');else{const b=document.querySelector(`[data-page="${id}"]`);if(b)b.classList.add('on')}
+  if(id==='sessions')renderSessions();
+  if(id==='report')renderMyReport();
+  if(id==='admin-report')renderAdminReport('all');
+  if(id==='data'){updateDBInfo();updateDBStats();}
+  if(id==='users')renderUsers();
+  if(id==='devices-set')renderDevicesSet();
+  if(id==='prices')renderPrices();
+  if(id==='drinks')renderDrinksList();
+  if(id==='clients')renderClients();
+  if(id==='shifts')renderShifts();
+  if(id==='branding')loadBrandingForm();
+  if(id==='telegram')loadTgForm();
+}
+
+// ══════════════════════════════════════════
+// Poll & Devices Grid
+// ══════════════════════════════════════════
+function startPoll(){
+  pollTimer=setInterval(()=>{updateDevGrid();updateMetrics()},1000);
+  updateDevGrid();updateMetrics();
+}
+
+function initDevGrid(){
+  const g=document.getElementById('dg');g.innerHTML='';
+  DEVICES.forEach(d=>{const el=document.createElement('div');el.id='dc-'+d.id.replace(/[-\s]/g,'_');g.appendChild(el)});
+}
+
+function devElId(id){return 'dc-'+id.replace(/[-\s]/g,'_')}
+
+function updateDevGrid(){
+  const now=Date.now();
+  DEVICES.forEach(d=>{
+    const el=document.getElementById(devElId(d.id));if(!el)return;
+    const a=active[d.id];const tc=d.type==='PS5'?'ps5':'ps4';
+    if(a){
+      const ms=now-a.start;
+      const devCost=((ms/3600000)*getRate(d.id,a.game));
+      const drinksCost=drinksTotal(a.drinks);
+      if(!el.classList.contains('busy')){
+        el.className='dc busy';
+        el.innerHTML=`<div class="dh"><div class="dn">${d.id}</div><span class="dtb ${tc}">${d.type}</span></div>
+        <div class="db">
+          <div class="srow"><div class="sdot busy"></div><span class="stxt busy">جلسة نشطة</span></div>
+          <div class="tmr" id="t-${devElId(d.id)}"></div>
+          <div class="sinf">${a.client||a.phone||'—'} · ${a.game} · ${a.dt==='مدة مفتوحة'?'مفتوحة':'محددة'}</div>
+          <div class="sinf" style="color:var(--text3);font-size:10px">⏰ بدأت: ${fmtT12(a.start)}${a.fixedEnd?' — تنتهي: '+fmtT12(a.fixedEnd):''}</div>
+          ${a.fixedEnd?'<div class="sinf" id="cd-fixed-'+devElId(d.id)+'" style="color:var(--amber);font-size:12px;font-weight:700;font-family:JetBrains Mono,monospace"></div>':''}
+          <div class="crow"><span class="clbl">⏱ الجهاز</span><span class="cval" id="cv-${devElId(d.id)}"></span></div>
+          <div class="crow"><span class="clbl">🥤 مشروبات</span><span class="cval drinks-val" id="cd-${devElId(d.id)}"></span></div>
+          <div class="crow-total"><span>الإجمالي</span><span class="total-val" id="ctot-${devElId(d.id)}"></span></div>
+          <button class="dbtn add-drink" onclick="openDrinksModal('${d.id}')">🥤 إضافة مشروبات</button>
+          <button class="dbtn end" onclick="openEnd('${d.id}')">⏹ إنهاء الجلسة</button>
+        </div>`;
+      }
+      const te=document.getElementById('t-'+devElId(d.id));
+      const cv=document.getElementById('cv-'+devElId(d.id));
+      const cd=document.getElementById('cd-'+devElId(d.id));
+      const ctot=document.getElementById('ctot-'+devElId(d.id));
+      if(te)te.textContent=fmtE(ms);
+      // Fixed session countdown
+      const cdf=document.getElementById('cd-fixed-'+devElId(d.id));
+      if(cdf&&a.fixedEnd){
+        const remaining=a.fixedEnd-now;
+        if(remaining>0){
+          cdf.textContent='⏳ فاضل: '+fmtE(remaining);
+          cdf.style.color='var(--amber)';
+        } else {
+          cdf.textContent='⚠ انتهى الوقت!';
+          cdf.style.color='var(--red)';
+        }
+      }
+      if(cv)cv.textContent=devCost.toFixed(1)+' ج';
+      if(cd)cd.textContent=drinksCost.toFixed(1)+' ج';
+      if(ctot)ctot.textContent=(devCost+drinksCost).toFixed(1)+' ج';
+    }else{
+      if(!el.classList.contains('free')){
+        el.className='dc free';
+        el.innerHTML=`<div class="dh"><div class="dn">${d.id}</div><span class="dtb ${tc}">${d.type}</span></div>
+        <div class="db">
+          <div class="srow"><div class="sdot free"></div><span class="stxt free">متاح</span></div>
+          <div class="tmr idle">--:--:--</div>
+          <div class="sinf" style="color:var(--text3)">لا توجد جلسة</div>
+          <div class="crow"><span class="clbl">جاهز للبدء</span><span class="cval">—</span></div>
+          <div style="height:22px"></div>
+          <button class="dbtn start" onclick="openStart('${d.id}')">▶ بدء جلسة</button>
+        </div>`;
+      }
+    }
+  });
+}
+
+function updateMetrics(){
+  const now=Date.now();
+  document.getElementById('m-busy').textContent=Object.keys(active).length;
+  const mySess=todaySessions.filter(s=>s.admin===currentUser.name);
+  const doneRev=mySess.reduce((s,x)=>s+x.actual+(x.drinks_total||0),0);
+  const liveRev=Object.entries(active).filter(([,a])=>a.who===currentUser.name)
+    .reduce((s,[id,a])=>s+((now-a.start)/3600000)*getRate(id,a.game)+drinksTotal(a.drinks),0);
+  document.getElementById('m-rev').textContent=Math.round(doneRev+liveRev);
+  document.getElementById('m-done').textContent=mySess.length;
+  if(mySess.length)document.getElementById('m-avg').textContent=Math.round(mySess.reduce((s,x)=>s+x.mins,0)/mySess.length);
+  else document.getElementById('m-avg').textContent='—';
+}
+
+// ══════════════════════════════════════════
+// Start Modal
+// ══════════════════════════════════════════
+function openStart(devId){
+  if(!currentShift){
+    toast('⚠ لازم تبدأ وردية الأول','err');
+    showPage('shifts',document.querySelector('[data-page="shifts"]'));
+    return;
+  }
+  const sel=document.getElementById('m-dev');
+  sel.innerHTML=DEVICES.map(d=>`<option value="${d.id}"${d.id===devId?' selected':''}>${d.id} (${d.type})</option>`).join('');
+  document.getElementById('m-phone').value='';
+  document.getElementById('m-cli').value='';
+  document.getElementById('m-game').value='';
+  document.getElementById('m-dt').value='مدة مفتوحة';
+  document.getElementById('fx-row').style.display='none';
+  document.getElementById('client-hint').style.display='none';
+  document.getElementById('m-add-client-btn').style.display='none';
+  updateRI();
+  document.getElementById('ov-start').classList.add('open');
+  setTimeout(()=>document.getElementById('m-phone').focus(),100);
+}
+function cs(){document.getElementById('ov-start').classList.remove('open')}
+function toggleFx(){document.getElementById('fx-row').style.display=document.getElementById('m-dt').value==='مدة محددة'?'block':'none'}
+function updateRI(){
+  const devId=document.getElementById('m-dev').value;const game=document.getElementById('m-game').value;
+  const dev=DEVICES.find(d=>d.id===devId);if(dev)document.getElementById('ri-v').textContent=PRICES[dev.type+'_'+game]||'—';
+}
+document.getElementById('m-dev').addEventListener('change',updateRI);
+document.getElementById('m-game').addEventListener('change',updateRI);
+
+async function lookupClient(phone){
+  const hint=document.getElementById('client-hint');
+  const addBtn=document.getElementById('m-add-client-btn');
+  if(phone.length<8){hint.style.display='none';addBtn.style.display='none';return}
+  const c=await idb.get(S_CLIENTS,phone);
+  if(c){
+    document.getElementById('m-cli').value=c.name;
+    hint.textContent='✓ عميل معروف: '+c.name;hint.style.display='block';
+    addBtn.style.display='none';
+  }else{
+    hint.style.display='none';
+    addBtn.style.display='block';
+  }
+}
+
+async function quickAddClient(){
+  const phone=document.getElementById('m-phone').value.trim();
+  const name=document.getElementById('m-cli').value.trim();
+  if(!phone||!name){toast('⚠ اكتب الاسم والموبايل','err');return}
+  await idb.put(S_CLIENTS,{phone,name,sessions:0,total:0});
+  document.getElementById('client-hint').textContent='✓ تم حفظ العميل: '+name;
+  document.getElementById('client-hint').style.display='block';
+  document.getElementById('m-add-client-btn').style.display='none';
+  toast('✓ تم حفظ العميل','ok');
+}
+
+function confirmStart(){
+  const devId=document.getElementById('m-dev').value;
+  if(!document.getElementById('m-game').value){toast('⚠ اختار نوع اللعب الأول','err');return;}
+  const fixedMins=parseInt(document.getElementById('m-fx').value)||60;
+  const dt=document.getElementById('m-dt').value;
+  active[devId]={
+    start:Date.now(),who:currentUser.name,
+    phone:document.getElementById('m-phone').value,
+    client:document.getElementById('m-cli').value,
+    game:document.getElementById('m-game').value,
+    dt,fixedMins,drinks:[],
+    fixedEnd:dt==='مدة محددة'?Date.now()+fixedMins*60000:null
+  };
+  const el=document.getElementById(devElId(devId));if(el)el.className='';
+  saveState();
+  cs();toast('✓ بدأت جلسة '+devId,'ok');
+  saveState();
+  if(tgCfg.onStart) sendTelegram(buildStartMsg(devId, active[devId]));
+}
+
+// ══════════════════════════════════════════
+// Drinks Modal
+// ══════════════════════════════════════════
+let tempDrinks={};
+function openDrinksModal(devId){
+  drinksDev=devId;
+  const a=active[devId];
+  document.getElementById('drinks-dev-label').textContent='الجهاز: '+devId+' — '+(a.client||a.phone||'—');
+  tempDrinks={};
+  const list=document.getElementById('drinks-modal-list');
+  list.innerHTML=DRINK_ITEMS.map(d=>`
+    <div class="drink-item-modal">
+      <span class="dim-name">${d.name}</span>
+      <span class="dim-price">${d.price} ج</span>
+      <div class="dim-qty">
+        <button onclick="changeDrinkQty('${d.name}',-1)">−</button>
+        <span id="dq-${d.name.replace(/\s/g,'_')}">0</span>
+        <button onclick="changeDrinkQty('${d.name}',1)">+</button>
+      </div>
+    </div>`).join('');
+  // pre-fill existing
+  a.drinks.forEach(dr=>{tempDrinks[dr.name]=dr.qty;updateDrinkQtyDisplay(dr.name)});
+  updateDrinksModalTotal();
+  document.getElementById('ov-drinks').classList.add('open');
+}
+function closeDrinksModal(){document.getElementById('ov-drinks').classList.remove('open')}
+function changeDrinkQty(name,delta){
+  tempDrinks[name]=Math.max(0,(tempDrinks[name]||0)+delta);
+  updateDrinkQtyDisplay(name);updateDrinksModalTotal();
+}
+function updateDrinkQtyDisplay(name){
+  const el=document.getElementById('dq-'+name.replace(/\s/g,'_'));
+  if(el)el.textContent=tempDrinks[name]||0;
+}
+function updateDrinksModalTotal(){
+  let tot=0;
+  DRINK_ITEMS.forEach(d=>{tot+=(tempDrinks[d.name]||0)*d.price});
+  document.getElementById('drinks-modal-total').textContent=tot+' ج';
+}
+function confirmDrinks(){
+  if(!drinksDev)return;
+  const a=active[drinksDev];
+  a.drinks=DRINK_ITEMS.filter(d=>(tempDrinks[d.name]||0)>0).map(d=>({name:d.name,price:d.price,qty:tempDrinks[d.name]}));
+  const el=document.getElementById(devElId(drinksDev));if(el)el.className='';
+  closeDrinksModal();
+  toast('✓ تم تحديث المشروبات','ok');
+}
+
+// ══════════════════════════════════════════
+// End Modal
+// ══════════════════════════════════════════
+function openEnd(devId){
+  endDev=devId;const a=active[devId];const now=Date.now();
+  const ms=now-a.start;const mins=Math.round(ms/60000);
+  const rate=getRate(devId,a.game);const raw=(ms/3600000)*rate;
+  const actual=Math.ceil(raw/5)*5;const drinksTot=drinksTotal(a.drinks);
+  document.getElementById('bill-dev').textContent=devId+' — '+(a.client||a.phone||'—')+' ('+a.game+')';
+  let rows=`
+    <div class="brow"><span class="bl">سعر الساعة</span><span class="bv">${rate} ج</span></div>
+    <div class="brow"><span class="bl">المدة</span><span class="bv">${mins} دقيقة</span></div>
+    <div class="brow"><span class="bl">إيراد الجهاز (مقرب)</span><span class="bv" style="color:var(--accent)">${actual} ج</span></div>`;
+  if(a.drinks.length){
+    rows+='<div style="height:6px"></div>';
+    a.drinks.forEach(d=>{rows+=`<div class="brow"><span class="bl">🥤 ${d.name} ×${d.qty}</span><span class="bv" style="color:var(--amber)">${d.price*d.qty} ج</span></div>`});
+    rows+=`<div class="brow"><span class="bl" style="color:var(--amber);font-weight:700">إجمالي المشروبات</span><span class="bv" style="color:var(--amber)">${drinksTot} ج</span></div>`;
+  }
+  document.getElementById('bill-rows').innerHTML=rows;
+  document.getElementById('bill-grand').textContent=(actual+drinksTot)+' ج';
+  document.getElementById('ov-end').classList.add('open');
+}
+function ce(){document.getElementById('ov-end').classList.remove('open')}
+
+async function confirmEnd(){
+  const devId=endDev;const a=active[devId];const now=Date.now();
+  const ms=now-a.start;const mins=Math.round(ms/60000);
+  const rate=getRate(devId,a.game);const raw=(ms/3600000)*rate;
+  const actual=Math.ceil(raw/5)*5;const drinksTot=drinksTotal(a.drinks);
+  const session={
+    device:devId,type:getType(devId),client:a.client,phone:a.phone,
+    game:a.game,dt:a.dt,start:a.start,end:now,mins,rate,
+    price:parseFloat(raw.toFixed(1)),actual,drinks:a.drinks,
+    drinks_total:drinksTot,grand_total:actual+drinksTot,
+    admin:currentUser.name,date:fmtDate(now),
+    shift_id:currentShift?currentShift.id:null
+  };
+  const tx=await idb.add(S_SESS,session);session.tx=tx;
+  // update client stats
+  if(a.phone){
+    const c=await idb.get(S_CLIENTS,a.phone);
+    if(c)await idb.put(S_CLIENTS,{...c,sessions:(c.sessions||0)+1,total:(c.total||0)+session.grand_total});
+  }
+  todaySessions.unshift(session);
+  const el=document.getElementById(devElId(devId));if(el)el.className='';
+  delete active[devId];
+  saveState();
+  ce();
+  toast('✓ تم حفظ الجلسة — إجمالي '+(actual+drinksTot)+' ج','ok');
+  updateShiftOnEndSession(session);
+  if(tgCfg.onEnd) sendTelegram(buildEndMsg(session));
+}
+
+// ══════════════════════════════════════════
+// Fixed Session Timer & TTS Alert
+// ══════════════════════════════════════════
+const alertedDevs=new Set();
+setInterval(()=>{
+  Object.entries(active).forEach(([id,a])=>{
+    if(a.dt==='مدة محددة'&&a.fixedEnd&&!alertedDevs.has(id)){
+      if(Date.now()>=a.fixedEnd){
+        alertedDevs.add(id);
+        const devNum=id.replace('PS5-','').replace('PS4-','');
+        const msg='تم انتهاء الجلسة المحددة للجهاز رقم '+devNum;
+        speakArabic(msg);
+        toast('⏰ '+msg,'warn');
+      }
+    }
+  });
+},5000);
+
+function speakArabic(text){
+  if(!window.speechSynthesis)return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ar-EG';u.rate=0.9;u.pitch=1;
+  // try to find Arabic voice
+  const voices=speechSynthesis.getVoices();
+  const arVoice=voices.find(v=>v.lang.startsWith('ar'));
+  if(arVoice)u.voice=arVoice;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+// preload voices
+if(window.speechSynthesis)speechSynthesis.getVoices();
+
+// ══════════════════════════════════════════
+// Sessions Page
+// ══════════════════════════════════════════
+function renderSessions(){
+  const isAdmin=currentUser.role==='admin';
+  const list=isAdmin?todaySessions:todaySessions.filter(s=>s.admin===currentUser.name);
+  document.getElementById('sess-sub').textContent=isAdmin?'جميع جلسات اليوم':'جلساتك اليوم';
+  const tb=document.getElementById('sess-tb');
+  if(!list.length){tb.innerHTML='<tr class="emp"><td colspan="13">لا توجد جلسات</td></tr>';return}
+  tb.innerHTML=list.map(s=>{
+    const tc=s.type==='PS5'?'ps5':'ps4';const gc=s.game==='فردى'?'s':'m';
+    return`<tr><td class="txn">${s.tx}</td>
+      <td><span class="tag ${tc}">${s.device}</span></td>
+      <td>${s.client||'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${s.phone||'—'}</td>
+      <td><span class="tag ${gc}">${s.game}</span></td>
+      <td>${fmtT12(s.start)}</td><td>${fmtT12(s.end)}</td><td>${s.mins}</td>
+      <td class="amc">${s.actual} ج</td>
+      <td style="color:var(--amber);font-weight:700;font-family:'JetBrains Mono',monospace">${s.drinks_total||0} ج</td>
+      <td style="color:var(--green);font-weight:700;font-family:'JetBrains Mono',monospace">${s.grand_total||s.actual} ج</td>
+      <td style="color:var(--accent);font-weight:700;font-family:'JetBrains Mono',monospace">${s.shift_id?'#'+s.shift_id:'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">${s.date}</td>
+      <td>${s.admin}</td></tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// My Report
+// ══════════════════════════════════════════
+function renderMyReport(data){
+  const src=data||todaySessions;
+  const list=src.filter(s=>s.admin===currentUser.name);
+  const devRev=list.reduce((a,s)=>a+s.actual,0);
+  const drkRev=list.reduce((a,s)=>a+(s.drinks_total||0),0);
+  document.getElementById('r-dev-rev').textContent=devRev+' ج';
+  document.getElementById('r-drk-rev').textContent=drkRev+' ج';
+  document.getElementById('r-tot').textContent=(devRev+drkRev)+' ج';
+  document.getElementById('r-cnt').textContent=list.length;
+  const dm={};DEVICES.forEach(d=>dm[d.id]=0);
+  list.forEach(s=>dm[s.device]=(dm[s.device]||0)+s.mins);
+  const maxM=Math.max(...Object.values(dm),1);
+  document.getElementById('r-bars').innerHTML=DEVICES.map(d=>{const pct=Math.round(dm[d.id]/maxM*100);
+    return`<div class="barrow"><span class="barlbl">${d.id}</span>
+      <div class="barbg"><div class="barfill" style="width:${pct}%;background:var(--accent)"></div></div>
+      <span class="barval">${dm[d.id]} د</span></div>`;}).join('');
+  const bt={};list.forEach(s=>{const k=s.type+' '+s.game;if(!bt[k])bt[k]={c:0,dev:0,drk:0};bt[k].c++;bt[k].dev+=s.actual;bt[k].drk+=(s.drinks_total||0)});
+  document.getElementById('r-types').innerHTML=Object.entries(bt).map(([k,v])=>
+    `<tr><td>${k}</td><td>${v.c}</td><td class="amc">${v.dev} ج</td>
+     <td style="color:var(--amber);font-weight:700;font-family:'JetBrains Mono',monospace">${v.drk} ج</td>
+     <td style="color:var(--green);font-weight:700;font-family:'JetBrains Mono',monospace">${v.dev+v.drk} ج</td></tr>`
+  ).join('')||'<tr class="emp"><td colspan="5">لا توجد بيانات</td></tr>';
+}
+
+// ══════════════════════════════════════════
+// Admin Report
+// ══════════════════════════════════════════
+var currentARData=null;
+function renderAdminReport(tab,data){
+  reportTab=tab;
+  const src=data||todaySessions;
+  currentARData=src;
+  const devRev=src.reduce((a,s)=>a+s.actual,0);
+  const drkRev=todaySessions.reduce((a,s)=>a+(s.drinks_total||0),0);
+  document.getElementById('ar-dev').textContent=devRev+' ج';
+  document.getElementById('ar-drk').textContent=drkRev+' ج';
+  document.getElementById('ar-tot').textContent=(devRev+drkRev)+' ج';
+  document.getElementById('ar-cnt').textContent=todaySessions.length;
+  const staffNames=[...new Set(src.map(s=>s.admin))];
+  const allTabs=[{key:'all',lbl:'الكل'},...staffNames.map(n=>({key:n,lbl:n}))];
+  document.getElementById('report-tabs').innerHTML=allTabs.map(t=>
+    `<button class="rtab${t.key===tab?' on':''}" onclick="renderAdminReport('${t.key}',currentARData)">${t.lbl}
+      <span style="background:var(--glow);color:var(--accent);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;margin-right:4px;font-family:'JetBrains Mono',monospace">${todaySessions.filter(s=>t.key==='all'||s.admin===t.key).length}</span>
+    </button>`).join('');
+  const list=tab==='all'?src:src.filter(s=>s.admin===tab);
+  let html='';
+  if(tab==='all'){
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px;margin-bottom:15px">';
+    const byUser={};
+    src.forEach(s=>{if(!byUser[s.admin])byUser[s.admin]={dev:0,drk:0,cnt:0};byUser[s.admin].dev+=s.actual;byUser[s.admin].drk+=(s.drinks_total||0);byUser[s.admin].cnt++;});
+    Object.entries(byUser).sort((a,b)=>(b[1].dev+b[1].drk)-(a[1].dev+a[1].drk)).forEach(([name,v])=>{
+      html+=`<div class="rc" style="border-color:rgba(245,158,11,0.25);margin-bottom:0">
+        <h3>${name}</h3>
+        <div style="font-size:20px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--gold)">${v.dev+v.drk} ج</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px">${v.cnt} جلسة · أجهزة ${v.dev} ج · مشروبات ${v.drk} ج</div>
+      </div>`;
+    });
+    html+='</div>';
+    const dm={};DEVICES.forEach(d=>dm[d.id]=0);todaySessions.forEach(s=>dm[s.device]=(dm[s.device]||0)+s.mins);
+    const maxM=Math.max(...Object.values(dm),1);
+    html+=`<div class="rc"><h3>استخدام الأجهزة اليوم</h3>`;
+    html+=DEVICES.map(d=>{const pct=Math.round(dm[d.id]/maxM*100);return`<div class="barrow"><span class="barlbl">${d.id}</span>
+      <div class="barbg"><div class="barfill" style="width:${pct}%;background:var(--gold)"></div></div>
+      <span class="barval">${dm[d.id]} د</span></div>`;}).join('');
+    html+='</div>';
+  }else{
+    const dm={};DEVICES.forEach(d=>dm[d.id]=0);list.forEach(s=>dm[s.device]=(dm[s.device]||0)+s.mins);
+    const maxM=Math.max(...Object.values(dm),1);const colors=['var(--accent)','var(--green)','var(--amber)','var(--ps4)','var(--ps5)'];
+    html+=`<div class="rc"><h3>استخدام الأجهزة — ${tab}</h3>`;
+    html+=DEVICES.map((d,i)=>{const pct=Math.round(dm[d.id]/maxM*100);return`<div class="barrow"><span class="barlbl">${d.id}</span>
+      <div class="barbg"><div class="barfill" style="width:${pct}%;background:${colors[i%5]}"></div></div>
+      <span class="barval">${dm[d.id]} د</span></div>`;}).join('');
+    html+='</div>';
+    const uDev=list.reduce((a,s)=>a+s.actual,0);const uDrk=list.reduce((a,s)=>a+(s.drinks_total||0),0);
+    html+=`<div class="rg3" style="margin-bottom:14px">
+      <div class="rc" style="margin-bottom:0"><h3>إيراد الأجهزة</h3><div class="rbig gr">${uDev} ج</div></div>
+      <div class="rc" style="margin-bottom:0"><h3>إيراد المشروبات</h3><div class="rbig gd">${uDrk} ج</div></div>
+      <div class="rc" style="margin-bottom:0"><h3>الإجمالي</h3><div class="rbig wh">${uDev+uDrk} ج</div></div>
+    </div>`;
+  }
+  html+=`<div class="tw"><table>
+    <thead><tr><th>#</th><th>الجهاز</th><th>العميل</th><th>النوع</th><th>الدقائق</th><th>الجهاز ج</th><th>مشروبات ج</th><th>الإجمالي</th><th>البداية</th><th>النهاية</th><th>الأدمن</th></tr></thead><tbody>`;
+  if(!list.length)html+='<tr class="emp"><td colspan="11">لا توجد جلسات</td></tr>';
+  else html+=list.map(s=>`<tr>
+    <td class="txn">${s.tx}</td><td><span class="tag ${s.type==='PS5'?'ps5':'ps4'}">${s.device}</span></td>
+    <td>${s.client||'—'}</td><td><span class="tag ${s.game==='فردى'?'s':'m'}">${s.game}</span></td>
+    <td>${s.mins}</td><td class="amc">${s.actual} ج</td>
+    <td style="color:var(--amber);font-weight:700;font-family:'JetBrains Mono',monospace">${s.drinks_total||0} ج</td>
+    <td style="color:var(--green);font-weight:700;font-family:'JetBrains Mono',monospace">${s.grand_total||s.actual} ج</td>
+    <td>${fmtT12(s.start)}</td><td>${fmtT12(s.end)}</td><td>${s.admin}</td></tr>`).join('');
+  html+='</tbody></table></div>';
+  document.getElementById('report-content').innerHTML=html;
+}
+
+// ══════════════════════════════════════════
+// Data Management
+// ══════════════════════════════════════════
+const exD=ts=>25569+(ts/86400000);
+function setPQ(period,prefix='ex'){
+  const now=new Date();const today=fmtDate(Date.now());
+  let from=today,to=today;
+  if(period==='week'){const d=new Date(now);d.setDate(d.getDate()-6);from=fmtDate(d.getTime())}
+  if(period==='month'){const d=new Date(now);d.setDate(d.getDate()-29);from=fmtDate(d.getTime())}
+  document.getElementById(prefix+'-from').value=from;
+  document.getElementById(prefix+'-to').value=to;
+}
+
+async function exportPeriod(){
+  const from=document.getElementById('ex-from').value,to=document.getElementById('ex-to').value;
+  const res=document.getElementById('ex-result');
+  if(!from||!to){res.className='period-result err';res.textContent='⚠ اختار الفترة';return}
+  if(from>to){res.className='period-result err';res.textContent='⚠ تاريخ البداية بعد النهاية';return}
+  res.className='period-result';res.textContent='جاري السحب...';
+  const sessions=await idb.range(from,to);
+  if(!sessions.length){res.className='period-result warn';res.textContent='⚠ مفيش جلسات في الفترة دي';return}
+  const wb=XLSX.utils.book_new();
+  const tH=['Transaction #','Device Name','Client','Phone','Start Time','End Time','Minutes','Type game','Price/Hr','Device Revenue','Drinks Revenue','Grand Total','Admin','Date'];
+  const mkRow=s=>[s.tx,s.device,s.client||'',s.phone||'',exD(s.start),exD(s.end),s.mins,s.game,s.rate,s.actual,s.drinks_total||0,s.grand_total||s.actual,s.admin,s.date];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([tH,...sessions.map(mkRow)]),'T');
+  const byUser={};sessions.forEach(s=>{if(!byUser[s.admin])byUser[s.admin]=[];byUser[s.admin].push(s)});
+  Object.entries(byUser).forEach(([name,ss])=>{XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([tH,...ss.map(mkRow)]),name.substring(0,31))});
+  const sumH=['الاسم','عدد الجلسات','إيراد الأجهزة','إيراد المشروبات','الإجمالي'];
+  const sumRows=[sumH,...Object.entries(byUser).map(([n,ss])=>[n,ss.length,ss.reduce((a,s)=>a+s.actual,0),ss.reduce((a,s)=>a+(s.drinks_total||0),0),ss.reduce((a,s)=>a+(s.grand_total||s.actual),0)])];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(sumRows),'ملخص المسؤولين');
+  var _xn=(window._cb&&window._cb.name?window._cb.name.replace(/[^\w\u0600-\u06FF]/g,'_'):'Export');
+  XLSX.writeFile(wb,_xn+'_'+from+'_'+to+'.xlsx');
+  res.className='period-result ok';res.textContent=`✓ تم سحب ${sessions.length} جلسة من ${from} إلى ${to}`;
+}
+
+async function clearPeriod(){
+  const from=document.getElementById('cl-from').value,to=document.getElementById('cl-to').value;
+  const res=document.getElementById('cl-result');
+  if(!from||!to){res.className='period-result err';res.textContent='⚠ اختار الفترة';return}
+  const sessions=await idb.range(from,to);
+  if(!sessions.length){res.className='period-result warn';res.textContent='⚠ مفيش جلسات';return}
+  document.getElementById('cc-msg').textContent=`هتمسح ${sessions.length} جلسة من ${from} إلى ${to}. تأكدت إنك سحبت Excel الأول؟`;
+  document.getElementById('cc-confirm-btn').onclick=async()=>{
+    document.getElementById('ov-confirm-clear').classList.remove('open');
+    const count=await idb.delRange(from,to);
+    await loadTodaySessions();
+    res.className='period-result ok';res.textContent=`✓ تم مسح ${count} جلسة`;
+    updateDBStats();toast('✓ تم تفريغ الفترة','ok');
+  };
+  document.getElementById('ov-confirm-clear').classList.add('open');
+}
+
+async function updateDBInfo(){
+  const all=await idb.getAll(S_SESS);
+  document.getElementById('db-info-txt').textContent=`قاعدة البيانات: IndexedDB — ${all.length} جلسة محفوظة بشكل دائم وآمن`;
+}
+async function updateDBStats(){
+  const all=await idb.getAll(S_SESS);
+  document.getElementById('stat-total').textContent=all.length;
+  if(all.length){
+    const sorted=all.slice().sort((a,b)=>a.start-b.start);
+    document.getElementById('stat-oldest').textContent=sorted[0].date;
+    document.getElementById('stat-newest').textContent=sorted[sorted.length-1].date;
+    document.getElementById('stat-rev').textContent=all.reduce((s,x)=>s+(x.grand_total||x.actual),0)+' ج';
+  }
+}
+
+// ══════════════════════════════════════════
+// Devices Settings
+// ══════════════════════════════════════════
+function renderDevicesSet(){
+  const list=document.getElementById('devices-set-list');
+  list.innerHTML=DEVICES.map(d=>`
+    <div class="set-row">
+      <span class="set-row-name">${d.id}</span>
+      <span class="set-row-val tag ${d.type==='PS5'?'ps5':'ps4'}">${d.type}</span>
+      <button class="set-row-del" onclick="deleteDevice('${d.id}')">🗑 حذف</button>
+    </div>`).join('');
+}
+
+async function addDevice(){
+  const name=document.getElementById('new-dev-name').value.trim();
+  const type=document.getElementById('new-dev-type').value;
+  if(!name){toast('⚠ اكتب اسم الجهاز','err');return}
+  if(DEVICES.find(d=>d.id===name)){toast('⚠ الجهاز ده موجود بالفعل','err');return}
+  await idb.add(S_DEVICES,{id:name,type});
+  await loadMasterData();
+  initDevGrid();renderDevicesSet();toast('✓ تم إضافة '+name,'ok');
+}
+
+async function deleteDevice(id){
+  if(active[id]){toast('⚠ الجهاز شغال، أنهي الجلسة الأول','err');return}
+  if(!confirm('هتحذف الجهاز '+id+'؟'))return;
+  await idb.del(S_DEVICES,id);
+  await loadMasterData();
+  initDevGrid();renderDevicesSet();toast('تم حذف '+id,'ok');
+}
+
+// ══════════════════════════════════════════
+// Prices Settings
+// ══════════════════════════════════════════
+function renderPrices(){
+  const types=['فردى','ملتي'];
+  ['PS5','PS4'].forEach(console_type=>{
+    const el=document.getElementById('prices-'+console_type.toLowerCase()+'-list');
+    el.innerHTML=types.map(t=>`
+      <div class="set-row">
+        <span class="set-row-name">${t}</span>
+        <input class="fi" type="number" id="pr-${console_type}-${t}" value="${PRICES[console_type+'_'+t]||0}" style="width:100px;text-align:center;flex:0 0 100px;padding:6px">
+        <span style="color:var(--text3);font-size:13px">جنيه/ساعة</span>
+      </div>`).join('');
+  });
+}
+
+async function savePrices(){
+  const types=['فردى','ملتي'];
+  for(const ct of['PS5','PS4']){
+    for(const t of types){
+      const v=parseFloat(document.getElementById('pr-'+ct+'-'+t).value)||0;
+      await idb.put(S_PRICES,{key:ct+'_'+t,val:v});
+    }
+  }
+  await loadMasterData();
+  toast('✓ تم حفظ الأسعار','ok');
+}
+
+// ══════════════════════════════════════════
+// Drinks Settings
+// ══════════════════════════════════════════
+function renderDrinksList(){
+  const el=document.getElementById('drinks-list');
+  el.innerHTML=DRINK_ITEMS.map(d=>`
+    <div class="set-row">
+      <span class="set-row-name">${d.name}</span>
+      <span class="set-row-val">${d.price} ج</span>
+      <button class="set-row-del" onclick="deleteDrink('${d.name}')">🗑 حذف</button>
+    </div>`).join('');
+}
+
+async function addDrink(){
+  const name=document.getElementById('new-drk-name').value.trim();
+  const price=parseFloat(document.getElementById('new-drk-price').value)||0;
+  if(!name){toast('⚠ اكتب اسم المشروب','err');return}
+  if(!price){toast('⚠ اكتب السعر','err');return}
+  await idb.put(S_DRINKS,{name,price});
+  await loadMasterData();
+  renderDrinksList();
+  document.getElementById('new-drk-name').value='';
+  document.getElementById('new-drk-price').value='';
+  toast('✓ تم إضافة '+name,'ok');
+}
+
+async function deleteDrink(name){
+  if(!confirm('هتحذف '+name+'؟'))return;
+  await idb.del(S_DRINKS,name);
+  await loadMasterData();renderDrinksList();toast('تم حذف '+name,'ok');
+}
+
+// ══════════════════════════════════════════
+// Clients
+// ══════════════════════════════════════════
+async function renderClients(){
+  var clients=await idb.getAll(S_CLIENTS);
+  var allSess=await idb.getAll(S_SESS);
+  // Enrich clients with last session date
+  clients=clients.map(function(cl){
+    var clientSess=allSess.filter(function(s){return s.phone===cl.phone;});
+    var lastSess=clientSess.sort(function(a,b){return b.start-a.start;})[0];
+    return Object.assign({},cl,{
+      sessions:clientSess.length||cl.sessions||0,
+      lastDate:lastSess?lastSess.date:cl.lastDate||null
+    });
+  });
+  // Sort
+  if(_clientSortBySession){
+    clients.sort(function(a,b){return (b.sessions||0)-(a.sessions||0);});
+  } else {
+    clients.sort(function(a,b){return (b.total||0)-(a.total||0);});
+  }
+  var el=document.getElementById('clients-list');
+  if(!clients.length){el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text2);font-size:14px;font-weight:600">لا يوجد عملاء محفوظون بعد</div>';return;}
+  el.innerHTML=clients.map(function(c2){
+    var lastInfo=c2.lastDate?'آخر جلسة: '+c2.lastDate:'لا توجد جلسات';
+    return '<div class="client-card">'
+      +'<div style="width:44px;height:44px;border-radius:50%;background:var(--glow);border:1px solid rgba(0,112,209,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>'
+      +'<div class="cc-info">'
+      +'<div class="cc-name">'+c2.name+'</div>'
+      +'<div class="cc-phone">'+c2.phone+'</div>'
+      +'<div class="cc-stats">'+c2.sessions+' جلسة · '+(c2.total||0)+' ج · '+lastInfo+'</div>'
+      +'</div>'
+      +'<button class="ua del" onclick="deleteClient(\''+c2.phone+'\')" >🗑 حذف</button>'
+      +'</div>';
+  }).join('');
+}
+
+async function deleteClient(phone){
+  if(!confirm('هتحذف العميل؟'))return;
+  await idb.del(S_CLIENTS,phone);renderClients();toast('تم الحذف','ok');
+}
+
+function closeAddClientModal(){document.getElementById('ov-add-client').classList.remove('open')}
+async function saveNewClient(){
+  const phone=document.getElementById('ac-phone').value.trim();
+  const name=document.getElementById('ac-name').value.trim();
+  if(!phone||!name){toast('⚠ اكتب الاسم والموبايل','err');return}
+  await idb.put(S_CLIENTS,{phone,name,sessions:0,total:0});
+  closeAddClientModal();renderClients();toast('✓ تم حفظ العميل','ok');
+}
+
+// ══════════════════════════════════════════
+// Users
+// ══════════════════════════════════════════
+async function renderUsers(){
+  const users=await idb.getAll(S_USERS);
+  const all=await idb.getAll(S_SESS);
+  const el=document.getElementById('users-list');el.innerHTML='';
+  users.forEach(u=>{
+    const isMe=u.name===currentUser.name;const isAdm=u.role==='admin';
+    const mySess=all.filter(s=>s.admin===u.name);
+    const rev=mySess.reduce((a,s)=>a+(s.grand_total||s.actual),0);
+    const card=document.createElement('div');card.className='user-card';
+    card.innerHTML=`
+      <div class="user-avatar${isAdm?' adm':''}">${isAdm?'👑':'🎮'}</div>
+      <div class="user-info">
+        <div class="user-name">${u.name}${isMe?' <span style="font-size:12px;color:var(--text3)">(أنت)</span>':''}</div>
+        <div class="user-role"><span class="tag ${isAdm?'adtag':'usrtag'}">${isAdm?'Admin':'User'}</span></div>
+        <div class="user-stats">${mySess.length} جلسة إجمالي · ${rev} ج</div>
+      </div>
+      <div class="user-actions">
+        <button class="ua" onclick="openEditUser('${u.name}')">✏ تعديل</button>
+        <button class="ua" onclick="openChPass('${u.name}')">🔑 السر</button>
+        ${!isMe?`<button class="ua del" onclick="deleteUser('${u.name}')">🗑 حذف</button>`:''}
+      </div>`;
+    el.appendChild(card);
+  });
+}
+
+function openAddUser(){
+  editingUser=null;
+  document.getElementById('um-title').textContent='➕ إضافة مستخدم';
+  document.getElementById('um-name').value='';document.getElementById('um-pass').value='';
+  document.getElementById('um-role').value='user';document.getElementById('um-name').disabled=false;
+  document.getElementById('um-err').textContent='';document.getElementById('um-btn').textContent='إضافة';
+  document.getElementById('ov-user').classList.add('open');
+  setTimeout(()=>document.getElementById('um-name').focus(),100);
+}
+
+async function openEditUser(name){
+  const u=await idb.get(S_USERS,name);editingUser=name;
+  document.getElementById('um-title').textContent='✏ تعديل '+name;
+  document.getElementById('um-name').value=u.name;document.getElementById('um-pass').value=u.pass;
+  document.getElementById('um-role').value=u.role;document.getElementById('um-name').disabled=true;
+  document.getElementById('um-err').textContent='';document.getElementById('um-btn').textContent='حفظ';
+  document.getElementById('ov-user').classList.add('open');
+}
+
+function closeUserModal(){document.getElementById('ov-user').classList.remove('open')}
+
+async function saveUser(){
+  const name=document.getElementById('um-name').value.trim();
+  const pass=document.getElementById('um-pass').value.trim();
+  const role=document.getElementById('um-role').value;
+  const err=document.getElementById('um-err');
+  if(!name){err.textContent='اكتب اسم المستخدم';return}
+  if(!pass){err.textContent='اكتب كلمة السر';return}
+  if(editingUser===null){
+    const existing=await idb.get(S_USERS,name);
+    if(existing){err.textContent='الاسم ده موجود بالفعل';return}
+    await idb.add(S_USERS,{name,pass,role});toast('✓ تم إضافة '+name,'ok');
+  }else{
+    await idb.put(S_USERS,{name:editingUser,pass,role});
+    if(editingUser===currentUser.name)currentUser.role=role;
+    toast('✓ تم تعديل '+editingUser,'ok');
+  }
+  closeUserModal();renderUsers();
+}
+
+async function deleteUser(name){
+  if(name===currentUser.name){toast('⚠ مش هتقدر تمسح نفسك','err');return}
+  if(!confirm('هتمسح '+name+'؟'))return;
+  await idb.del(S_USERS,name);renderUsers();toast('تم حذف '+name,'ok');
+}
+
+function openChPass(name){
+  chPassUser=name;
+  document.getElementById('chp-name').textContent='تغيير كلمة سر: '+name;
+  document.getElementById('chp-new').value='';
+  document.getElementById('ov-chpass').classList.add('open');
+  setTimeout(()=>document.getElementById('chp-new').focus(),100);
+}
+function closeChPass(){document.getElementById('ov-chpass').classList.remove('open')}
+async function confirmChPass(){
+  const np=document.getElementById('chp-new').value.trim();
+  if(!np){toast('⚠ اكتب كلمة السر الجديدة','err');return}
+  const u=await idb.get(S_USERS,chPassUser);
+  await idb.put(S_USERS,{...u,pass:np});
+  closeChPass();toast('✓ تم تغيير كلمة السر','ok');renderUsers();
+}
+
+// ══════════════════════════════════════════
+// Toast
+// ══════════════════════════════════════════
+function toast(msg,type='ok'){
+  const c=document.getElementById('tc');const t=document.createElement('div');
+  t.className='toast '+type;
+  t.innerHTML=(type==='ok'?'✓ ':type==='warn'?'⏰ ':'⚠ ')+msg;
+  c.appendChild(t);setTimeout(()=>t.remove(),4000);
+}
+
+
+
+
+// ══════════════════════════════════════════
+// Telegram Notifications
+// ══════════════════════════════════════════
+let tgCfg = {token:'', chatId:'', onStart:true, onEnd:true, hourly:true};
+let hourlyTimer = null;
+
+async function loadTgConfig(){
+  const s = await idb.get(S_SETTINGS,'telegram');
+  if(s) tgCfg = {...tgCfg, ...s.val};
+  startHourlyTimer();
+}
+
+async function saveTgSettings(){
+  const token  = document.getElementById('tg-token').value.trim();
+  const chatId = document.getElementById('tg-chatid').value.trim();
+  const cfg = {
+    token,  chatId,
+    onStart:  document.getElementById('tg-on-start').checked,
+    onEnd:    document.getElementById('tg-on-end').checked,
+    hourly:   document.getElementById('tg-hourly').checked,
+  };
+  await idb.put(S_SETTINGS,{key:'telegram', val:cfg});
+  tgCfg = cfg;
+  startHourlyTimer();
+  document.getElementById('tg-msg').style.color='var(--green)';
+  document.getElementById('tg-msg').textContent = '✓ تم حفظ الإعدادات';
+  toast('✓ تم حفظ إعدادات Telegram','ok');
+}
+
+async function loadTgForm(){
+  const s = await idb.get(S_SETTINGS,'telegram');
+  const cfg = s ? s.val : tgCfg;
+  document.getElementById('tg-token').value   = cfg.token  || '';
+  document.getElementById('tg-chatid').value  = cfg.chatId || '';
+  document.getElementById('tg-on-start').checked = cfg.onStart !== false;
+  document.getElementById('tg-on-end').checked   = cfg.onEnd   !== false;
+  document.getElementById('tg-hourly').checked   = cfg.hourly  !== false;
+  document.getElementById('tg-msg').textContent  = '';
+}
+
+async function sendTelegram(text){
+  if(!tgCfg.token || !tgCfg.chatId) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${tgCfg.token}/sendMessage`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({chat_id: tgCfg.chatId, text, parse_mode:'HTML'})
+    });
+  } catch(e){ console.warn('Telegram error:',e); }
+}
+
+async function testTelegram(){
+  const token  = document.getElementById('tg-token').value.trim();
+  const chatId = document.getElementById('tg-chatid').value.trim();
+  const msg    = document.getElementById('tg-msg');
+  if(!token||!chatId){
+    msg.style.color='var(--red)';
+    msg.textContent='⚠ اكتب الـ Token والـ Chat ID الأول';
+    return;
+  }
+  msg.style.color='var(--text2)';msg.textContent='جاري الإرسال...';
+  try{
+    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:chatId,text:'✅ ZOMBIE Gaming Center\n\nتم ربط البرنامج بنجاح! 🎮\nالإشعارات شغالة ومستعدة.',parse_mode:'HTML'})
+    });
+    const res = await r.json();
+    if(res.ok){
+      msg.style.color='var(--green)';
+      msg.textContent='✓ تم الإرسال بنجاح! راجع الـ Telegram بتاعك';
+    } else {
+      msg.style.color='var(--red)';
+      msg.textContent='⚠ خطأ: '+(res.description||'Token أو Chat ID غلط');
+    }
+  }catch(e){
+    msg.style.color='var(--red)';
+    msg.textContent='⚠ تأكد من الاتصال بالإنترنت';
+  }
+}
+
+function fmtT12Tg(ts){
+  const d=new Date(ts);let h=d.getHours();const m=String(d.getMinutes()).padStart(2,'0');
+  const ap=h>=12?'م':'ص';h=h%12||12;return String(h).padStart(2,'0')+':'+m+' '+ap;
+}
+
+function buildStartMsg(devId, a){
+  const rate = getRate(devId, a.game);
+  return `🟢 <b>جلسة جديدة بدأت</b>
+━━━━━━━━━━━━━━━
+🕹 <b>الجهاز:</b> ${devId}
+👤 <b>العميل:</b> ${a.client||'—'}${a.phone?' ('+a.phone+')':''}
+🎮 <b>نوع اللعب:</b> ${a.game}
+⏰ <b>نوع المدة:</b> ${a.dt==='مدة مفتوحة'?'مفتوحة':'محددة '+a.fixedMins+' د'}
+💰 <b>سعر الساعة:</b> ${rate} ج
+⌚ <b>وقت البداية:</b> ${fmtT12Tg(a.start)}
+👮 <b>الأدمن:</b> ${a.who}`;
+}
+
+function buildEndMsg(session){
+  return `🔴 <b>جلسة انتهت</b>
+━━━━━━━━━━━━━━━
+🕹 <b>الجهاز:</b> ${session.device}
+👤 <b>العميل:</b> ${session.client||'—'}${session.phone?' ('+session.phone+')':''}
+🎮 <b>نوع اللعب:</b> ${session.game}
+⏱ <b>المدة:</b> ${session.mins} دقيقة
+⌚ <b>من</b> ${fmtT12Tg(session.start)} <b>إلى</b> ${fmtT12Tg(session.end)}
+💰 <b>إيراد الجهاز:</b> ${session.actual} ج
+🥤 <b>المشروبات:</b> ${session.drinks_total||0} ج
+💵 <b>الإجمالي:</b> ${session.grand_total||session.actual} ج
+👮 <b>الأدمن:</b> ${session.admin}`;
+}
+
+async function buildHourlyMsg(){
+  const now = Date.now();
+  const activeList = Object.entries(active);
+  let txt = `📊 <b>ملخص الساعة — ${fmtT12Tg(now)}</b>
+━━━━━━━━━━━━━━━
+`;
+
+  if(activeList.length){
+    txt += `🟢 <b>الأجهزة الشغالة: ${activeList.length}</b>
+`;
+    activeList.forEach(([id,a])=>{
+      const mins = Math.round((now-a.start)/60000);
+      const cost = ((now-a.start)/3600000*getRate(id,a.game)).toFixed(0);
+      txt += `  • ${id}: ${a.client||'—'} (${mins} د) — ${cost} ج
+`;
+    });
+  } else {
+    txt += `😴 <b>لا توجد جلسات نشطة</b>
+`;
+  }
+
+  const todayRev   = todaySessions.reduce((s,x)=>s+(x.grand_total||x.actual),0);
+  const todayCount = todaySessions.length;
+  txt += `━━━━━━━━━━━━━━━
+`;
+  txt += `✅ <b>جلسات مكتملة:</b> ${todayCount}
+`;
+  txt += `💵 <b>إيراد اليوم:</b> ${todayRev} ج`;
+  return txt;
+}
+
+function startHourlyTimer(){
+  if(hourlyTimer) clearInterval(hourlyTimer);
+  if(!tgCfg.hourly || !tgCfg.token) return;
+  // send at the top of every hour
+  const now = new Date();
+  const msToNextHour = (60 - now.getMinutes())*60000 - now.getSeconds()*1000;
+  setTimeout(async()=>{
+    if(tgCfg.hourly && tgCfg.token){
+      const msg = await buildHourlyMsg();
+      sendTelegram(msg);
+    }
+    hourlyTimer = setInterval(async()=>{
+      if(tgCfg.hourly && tgCfg.token){
+        const msg = await buildHourlyMsg();
+        sendTelegram(msg);
+      }
+    }, 3600000);
+  }, msToNextHour);
+}
+
+// ══════════════════════════════════════════
+// Backup & Restore
+// ══════════════════════════════════════════
+let pendingRestoreData = null;
+
+async function exportBackup(){
+  const res = document.getElementById('backup-result');
+  res.className = 'period-result'; res.textContent = 'جاري تجميع البيانات...';
+  try {
+    const backup = {
+      version: 2,
+      exported_at: new Date().toISOString(),
+      app: 'ZOMBIE Gaming Center',
+      data: {
+        sessions:  await idb.getAll(S_SESS),
+        users:     await idb.getAll(S_USERS),
+        devices:   await idb.getAll(S_DEVICES),
+        prices:    await idb.getAll(S_PRICES),
+        drinks:    await idb.getAll(S_DRINKS),
+        clients:   await idb.getAll(S_CLIENTS),
+        settings:  await idb.getAll(S_SETTINGS),
+      }
+    };
+    const total = backup.data.sessions.length;
+    const json  = JSON.stringify(backup, null, 2);
+    const blob  = new Blob([json], {type:'application/json'});
+    const a     = document.createElement('a');
+    a.href      = URL.createObjectURL(blob);
+    const date  = new Date().toISOString().slice(0,10);
+    var _cn=(window._cb&&window._cb.name?window._cb.name.replace(/[^\w\u0600-\u06FF]/g,'_'):'Backup');
+    a.download=_cn+'_'+date+'.json';
+    a.click();
+    res.className = 'period-result ok';
+    res.textContent = `✓ تم سحب Backup كامل — ${total} جلسة + كل الإعدادات`;
+  } catch(e) {
+    res.className = 'period-result err';
+    res.textContent = '⚠ خطأ أثناء السحب: ' + e.message;
+  }
+}
+
+function importBackup(input){
+  const res     = document.getElementById('backup-result');
+  const preview = document.getElementById('backup-preview');
+  const previewContent = document.getElementById('backup-preview-content');
+  preview.style.display = 'none';
+  pendingRestoreData = null;
+
+  const file = input.files[0];
+  if(!file){ return; }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const backup = JSON.parse(e.target.result);
+      // Validate
+      if(!backup.data || !backup.data.sessions){
+        res.className = 'period-result err';
+        res.textContent = '⚠ الملف مش Backup صح!';
+        return;
+      }
+      pendingRestoreData = backup;
+      const d = backup.data;
+      const expDate = backup.exported_at ? new Date(backup.exported_at).toLocaleString('ar-EG') : '—';
+      previewContent.innerHTML = `
+        <div style="color:var(--amber);font-size:14px;font-weight:800;margin-bottom:10px">⚠ هيتم استبدال كل البيانات الحالية!</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="si">📅 تاريخ الباكاب: <span>${expDate}</span></div>
+          <div class="si">📋 عدد الجلسات: <span>${d.sessions.length}</span></div>
+          <div class="si">👤 عدد العملاء: <span>${(d.clients||[]).length}</span></div>
+          <div class="si">👥 عدد المستخدمين: <span>${(d.users||[]).length}</span></div>
+          <div class="si">🕹 عدد الأجهزة: <span>${(d.devices||[]).length}</span></div>
+          <div class="si">🥤 المشروبات: <span>${(d.drinks||[]).length}</span></div>
+        </div>`;
+      preview.style.display = 'block';
+      res.className = 'period-result warn';
+      res.textContent = 'تم قراءة الملف — راجع التفاصيل وأكد الاستعادة';
+    } catch(err){
+      res.className = 'period-result err';
+      res.textContent = '⚠ ملف تالف أو مش JSON: ' + err.message;
+    }
+    input.value = ''; // reset so same file can be re-selected
+  };
+  reader.readAsText(file);
+}
+
+async function confirmRestore(){
+  if(!pendingRestoreData){ return; }
+  const res = document.getElementById('backup-result');
+  const preview = document.getElementById('backup-preview');
+  res.className = 'period-result'; res.textContent = 'جاري الاستعادة...';
+
+  try {
+    const d = pendingRestoreData.data;
+    const stores = [
+      {name: S_SESS,     data: d.sessions  || []},
+      {name: S_USERS,    data: d.users     || []},
+      {name: S_DEVICES,  data: d.devices   || []},
+      {name: S_PRICES,   data: d.prices    || []},
+      {name: S_DRINKS,   data: d.drinks    || []},
+      {name: S_CLIENTS,  data: d.clients   || []},
+      {name: S_SETTINGS, data: d.settings  || []},
+    ];
+
+    for(const store of stores){
+      // Clear store then re-add all
+      await new Promise((res2,rej) => {
+        const req = db.transaction(store.name,'readwrite').objectStore(store.name).clear();
+        req.onsuccess = () => res2(); req.onerror = rej;
+      });
+      for(const item of store.data){
+        await idb.put(store.name, item).catch(()=>idb.add(store.name, item).catch(()=>{}));
+      }
+    }
+
+    // Reload everything
+    await loadMasterData();
+    await loadTodaySessions();
+    await loadBranding();
+  await loadTgConfig();
+  await loadCurrentShift();
+    initDevGrid();
+
+    preview.style.display = 'none';
+    pendingRestoreData = null;
+    res.className = 'period-result ok';
+    res.textContent = `✓ تمت الاستعادة بنجاح — ${d.sessions.length} جلسة و ${(d.clients||[]).length} عميل`;
+    toast('✓ تمت استعادة الـ Backup بنجاح!','ok');
+    updateDBStats();
+  } catch(err){
+    res.className = 'period-result err';
+    res.textContent = '⚠ خطأ أثناء الاستعادة: ' + err.message;
+  }
+}
+
+function cancelRestore(){
+  pendingRestoreData = null;
+  document.getElementById('backup-preview').style.display = 'none';
+  document.getElementById('backup-result').textContent = '';
+  document.getElementById('restore-file').value = '';
+}
+
+// ══════════════════════════════════════════
+// Branding
+// ══════════════════════════════════════════
+const DEFAULT_BRAND={name:'ZOMBIE Gaming',sub:'Gaming Center',logo:'🧟',color:'#0070D1'};
+
+async function loadBranding(){
+  const n=await idb.get(S_SETTINGS,'brand');
+  const b=n?n.val:DEFAULT_BRAND;
+  window._cb=b;
+  applyBranding(b);
+  return b;
+}
+
+function applyBranding(b){
+  // Sidebar
+  var _si=document.querySelector('.sb-icon');if(_si)_si.textContent=b.logo;
+  var _sn=document.querySelector('.sb-name');if(_sn)_sn.textContent=b.name;
+  var _ss=document.querySelector('.sb-sub');if(_ss)_ss.textContent=b.sub;
+  // Login
+  const li=document.querySelector('.login-icon');if(li)li.textContent=b.logo;
+  const lt=document.querySelector('.login-title');if(lt)lt.textContent=b.name;
+  const lsub=document.querySelector('.login-sub');if(lsub)lsub.textContent=b.sub;
+  // Title
+  document.title=b.name;
+  // Accent color
+  document.documentElement.style.setProperty('--accent',b.color);
+  document.documentElement.style.setProperty('--accent2',shadeColor(b.color,-30));
+  document.documentElement.style.setProperty('--glow',b.color+'30');
+}
+
+function shadeColor(hex,pct){
+  const n=parseInt(hex.slice(1),16);
+  const r=Math.min(255,Math.max(0,((n>>16)&0xff)+pct));
+  const g=Math.min(255,Math.max(0,((n>>8)&0xff)+pct));
+  const bv=Math.min(255,Math.max(0,(n&0xff)+pct));
+  return'#'+((r<<16)|(g<<8)|bv).toString(16).padStart(6,'0');
+}
+
+async function loadBrandingForm(){
+  const n=await idb.get(S_SETTINGS,'brand');
+  const b=n?n.val:DEFAULT_BRAND;
+  document.getElementById('brand-name').value=b.name;
+  document.getElementById('brand-sub').value=b.sub;
+  document.getElementById('brand-logo').value=b.logo;
+  document.getElementById('brand-preview').textContent=b.logo;
+  document.getElementById('brand-color').value=b.color;
+  document.getElementById('brand-color-val').textContent=b.color;
+  document.getElementById('brand-msg').textContent='';
+}
+
+async function saveBranding(){
+  const b={
+    name:document.getElementById('brand-name').value.trim()||DEFAULT_BRAND.name,
+    sub:document.getElementById('brand-sub').value.trim()||DEFAULT_BRAND.sub,
+    logo:document.getElementById('brand-logo').value.trim()||DEFAULT_BRAND.logo,
+    color:document.getElementById('brand-color').value||DEFAULT_BRAND.color,
+  };
+  await idb.put(S_SETTINGS,{key:'brand',val:b});
+  window._cb=b;
+  applyBranding(b);
+  document.getElementById('brand-msg').textContent='✓ تم التطبيق على البرنامج كله!';
+  toast('✓ تم حفظ هوية السنتر','ok');
+}
+
+
+// ══════════════════════════════════════════
+// Shifts
+// ══════════════════════════════════════════
+async function loadCurrentShift(){
+  var all = await idb.getAll(S_SHIFTS);
+  currentShift = all.find(function(s){return s.user===currentUser.name && s.status==='active'}) || null;
+  renderShiftSidebar();
+}
+
+function renderShiftSidebar(){
+  var el=document.getElementById('sb-shift-val');
+  var box=document.getElementById('sb-shift-box');
+  if(!el) return;
+  if(currentShift){
+    el.className='sb-shift-val';
+    el.textContent='وردية #'+currentShift.id+' 🟢';
+    if(box) box.style.borderBottom='2px solid #22c55e';
+  } else {
+    el.className='sb-shift-val off';
+    el.textContent='لا توجد وردية';
+    if(box) box.style.borderBottom='';
+  }
+}
+
+function renderCurrentShiftBar(){
+  var el=document.getElementById('shift-current-bar');
+  if(!el) return;
+  if(currentShift){
+    el.innerHTML='<div class="shift-bar active-shift">'
+      +'<div class="shift-badge on">🟢 وردية نشطة</div>'
+      +'<div class="shift-info"><div>وردية #'+currentShift.id+' — '+currentShift.user+'</div>'
+      +'<div class="shift-sub">بدأت '+fmtT12(currentShift.start)
+      +' | الجلسات: '+currentShift.session_count
+      +' | الأجهزة: '+currentShift.devices_rev+' ج'
+      +' | مشروبات: '+currentShift.drinks_rev+' ج'
+      +' | الإجمالي: '+currentShift.total+' ج</div></div>'
+      +'<button class="shift-btn end-sh" onclick="endShift()">⏹ إنهاء الوردية</button>'
+      +'</div>';
+  } else {
+    el.innerHTML='<div class="shift-bar">'
+      +'<div class="shift-badge off">⚪ لا توجد وردية</div>'
+      +'<div class="shift-info"><div style="color:var(--text2);font-weight:600">ابدأ وردية لتتبع جلساتك</div></div>'
+      +'<button class="shift-btn start-sh" onclick="startShift()">▶ بدء وردية</button>'
+      +'</div>';
+  }
+}
+
+async function startShift(){
+  if(currentShift){ toast('⚠ عندك وردية شغالة بالفعل','err'); return; }
+  var shift={
+    user:currentUser.name,
+    start:Date.now(),end:null,status:'active',
+    session_count:0,devices_rev:0,drinks_rev:0,total:0,
+    date:fmtDate(Date.now())
+  };
+  var id=await idb.add(S_SHIFTS,shift);
+  shift.id=id;
+  currentShift=shift;
+  renderShiftSidebar();
+  renderCurrentShiftBar();
+  toast('✓ بدأت وردية #'+id,'ok');
+  saveState();
+}
+
+async function endShift(){
+  if(!currentShift){ toast('⚠ مفيش وردية شغالة','err'); return; }
+  if(!confirm('هتنهي وردية #'+currentShift.id+' ؟')) return;
+  var dur=Math.round((Date.now()-currentShift.start)/60000);
+  var ended=Object.assign({},currentShift,{end:Date.now(),status:'ended'});
+  await idb.put(S_SHIFTS,ended);
+  toast('✓ انتهت وردية #'+ended.id+' — إجمالي '+ended.total+' ج','ok');
+  currentShift=null;
+  saveState();
+  renderShiftSidebar();
+  renderCurrentShiftBar();
+  renderShifts();
+}
+
+async function updateShiftOnEndSession(session){
+  if(!currentShift) return;
+  var updated=Object.assign({},currentShift,{
+    session_count:currentShift.session_count+1,
+    devices_rev:currentShift.devices_rev+session.actual,
+    drinks_rev:currentShift.drinks_rev+(session.drinks_total||0),
+    total:currentShift.total+(session.grand_total||session.actual)
+  });
+  await idb.put(S_SHIFTS,updated);
+  currentShift=updated;
+  renderShiftSidebar();
+}
+
+async function renderShifts(){
+  var isAdmin=currentUser.role==='admin';
+  document.getElementById('shifts-sub').textContent=isAdmin?'جميع الورديات':'ورديات '+currentUser.name;
+  renderCurrentShiftBar();
+
+  // populate user filter
+  var all=await idb.getAll(S_SHIFTS);
+  var users=[...new Set(all.map(function(s){return s.user}))];
+  var usel=document.getElementById('sh-user-sel');
+  if(usel){
+    var prev=usel.value;
+    usel.innerHTML='<option value="">كل المسؤولين</option>';
+    users.forEach(function(u){usel.innerHTML+='<option value="'+u+'">'+u+'</option>';});
+    usel.value=prev;
+  }
+
+  // filter
+  var from=(document.getElementById('sh-from')||{}).value||'';
+  var to=(document.getElementById('sh-to')||{}).value||'';
+  var userF=(document.getElementById('sh-user-sel')||{}).value||'';
+
+  var list=all;
+  if(!isAdmin) list=list.filter(function(s){return s.user===currentUser.name});
+  if(from) list=list.filter(function(s){return s.date>=from});
+  if(to)   list=list.filter(function(s){return s.date<=to});
+  if(userF) list=list.filter(function(s){return s.user===userF});
+  list.sort(function(a,b){return b.start-a.start});
+
+  var el=document.getElementById('shifts-list');
+  if(!list.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text2);font-size:14px;font-weight:600">لا توجد ورديات</div>';
+    return;
+  }
+  el.innerHTML=list.map(function(sh){
+    var active=sh.status==='active';
+    var endMs=sh.end||Date.now();
+    var dur=Math.round((endMs-sh.start)/60000);
+    var h=Math.floor(dur/60),m=dur%60;
+    var durStr=(h?h+' س ':'')+m+' د';
+    return '<div class="shift-card'+(active?' asc':'')+'">'
+      +'<div class="sc-header">'
+      +'<div class="sc-num">#'+sh.id+'</div>'
+      +'<div style="flex:1">'
+      +'<div class="sc-user">'+sh.user+' <span class="shift-badge '+(active?'on':'off')+'">'+(active?'🟢 نشطة':'✅ منتهية')+'</span></div>'
+      +'<div class="sc-time">'
+      +fmtT12(sh.start)+(sh.end?' → '+fmtT12(sh.end):' → الآن')
+      +' | '+durStr+' | '+sh.date
+      +'</div>'
+      +'</div>'
+      +'</div>'
+      +'<div class="sc-stats">'
+      +'<div class="scs"><div class="scs-l">الجلسات</div><div class="scs-v ac">'+sh.session_count+'</div></div>'
+      +'<div class="scs"><div class="scs-l">الأجهزة</div><div class="scs-v gr">'+sh.devices_rev+' ج</div></div>'
+      +'<div class="scs"><div class="scs-l">المشروبات</div><div class="scs-v gd">'+sh.drinks_rev+' ج</div></div>'
+      +'<div class="scs"><div class="scs-l">الإجمالي</div><div class="scs-v">'+sh.total+' ج</div></div>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function clearShiftFilter(){
+  ['sh-from','sh-to'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var sel=document.getElementById('sh-user-sel');if(sel)sel.value='';
+  renderShifts();
+}
+
+// ── Session filters ──
+async function applySessionFilter(){
+  var from=document.getElementById('sess-from').value;
+  var to=document.getElementById('sess-to').value;
+  if(!from&&!to){ await loadTodaySessions(); renderSessions(); return; }
+  todaySessions=await idb.range(from||'2000-01-01',to||'2099-12-31');
+  todaySessions.sort(function(a,b){return b.start-a.start});
+  renderSessions();
+}
+async function clearSessionFilter(){
+  document.getElementById('sess-from').value='';
+  document.getElementById('sess-to').value='';
+  await loadTodaySessions();
+  renderSessions();
+}
+
+async function applyMyRepFilter(){
+  var from=document.getElementById('rep-from').value;
+  var to=document.getElementById('rep-to').value;
+  if(!from&&!to){ renderMyReport(); return; }
+  var data=await idb.range(from||'2000-01-01',to||'2099-12-31');
+  renderMyReport(data);
+}
+function clearMyRepFilter(){
+  document.getElementById('rep-from').value='';
+  document.getElementById('rep-to').value='';
+  renderMyReport();
+}
+
+async function applyARFilter(){
+  var from=document.getElementById('ar-from').value;
+  var to=document.getElementById('ar-to').value;
+  if(!from&&!to){ renderAdminReport('all'); return; }
+  var data=await idb.range(from||'2000-01-01',to||'2099-12-31');
+  renderAdminReport('all',data);
+}
+function clearARFilter(){
+  document.getElementById('ar-from').value='';
+  document.getElementById('ar-to').value='';
+  renderAdminReport('all');
+}
+
+
+// ══════════════════════════════════════════
+// Session persistence across refresh
+// ══════════════════════════════════════════
+var STATE_KEY='zb_state';
+
+// Save active sessions + shift to localStorage (survives browser close)
+// Save user to sessionStorage only (lost when browser closes)
+function saveState(){
+  if(!currentUser) return;
+  try{
+    // sessionStorage: for auto-login on refresh only
+    sessionStorage.setItem('zb_sess_user',JSON.stringify(currentUser));
+    // localStorage: sessions + shift survive browser close
+    localStorage.setItem('zb_active_'+currentUser.name,JSON.stringify(active));
+    localStorage.setItem('zb_shift_'+currentUser.name,JSON.stringify(currentShift));
+    // Lock: if there are open sessions or shift, save locked user
+    if(Object.keys(active).length>0||currentShift){
+      localStorage.setItem('zb_locked_user',currentUser.name);
+    } else {
+      localStorage.removeItem('zb_locked_user');
+    }
+  }catch(e){}
+}
+
+function clearState(){
+  try{
+    if(currentUser){
+      localStorage.removeItem('zb_active_'+currentUser.name);
+      localStorage.removeItem('zb_shift_'+currentUser.name);
+    }
+    sessionStorage.removeItem('zb_sess_user');
+  }catch(e){}
+}
+
+async function restoreState(){
+  try{
+    // Try refresh restore (sessionStorage)
+    var sessRaw=sessionStorage.getItem('zb_sess_user');
+    if(!sessRaw) return false; // browser was closed — require login
+    var savedUser=JSON.parse(sessRaw);
+    if(!savedUser||!savedUser.name) return false;
+    // Verify user still valid in DB
+    var users=await idb.getAll(S_USERS);
+    var u=users.find(function(x){return x.name===savedUser.name&&x.pass===savedUser.pass;});
+    if(!u) return false;
+    currentUser=savedUser;
+    // Restore sessions + shift from localStorage
+    var actRaw=localStorage.getItem('zb_active_'+currentUser.name);
+    var shRaw=localStorage.getItem('zb_shift_'+currentUser.name);
+    active=actRaw?JSON.parse(actRaw):{};
+    currentShift=shRaw?JSON.parse(shRaw):null;
+    // Boot app
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    await loadMasterData();
+    await loadTodaySessions();
+    await loadBranding();
+    await loadTgConfig();
+    buildSidebar();
+    initDevGrid();
+    startPoll();
+    updateDBInfo();
+    if(Object.keys(active).length>0)
+      toast('✓ تم استعادة '+Object.keys(active).length+' جلسة مفتوحة','ok');
+    return true;
+  }catch(e){
+    console.warn('restoreState:',e);
+    return false;
+  }
+}
+
+// After login: restore saved sessions/shift for this user (from browser close)
+async function restoreUserSessions(){
+  try{
+    var actRaw=localStorage.getItem('zb_active_'+currentUser.name);
+    var shRaw=localStorage.getItem('zb_shift_'+currentUser.name);
+    if(actRaw){active=JSON.parse(actRaw);}
+    if(shRaw){currentShift=JSON.parse(shRaw);}
+    if(Object.keys(active).length>0)
+      toast('✓ تم استعادة '+Object.keys(active).length+' جلسة مفتوحة','ok');
+    if(currentShift)
+      toast('✓ الوردية #'+currentShift.id+' لا تزال مفتوحة','ok');
+  }catch(e){}
+}
+
+
+// Clients helpers
+var _clientSortBySession=false;
+
+function toggleClientSort(){
+  _clientSortBySession=!_clientSortBySession;
+  var btn=document.getElementById('sort-btn');
+  if(btn)btn.style.background=_clientSortBySession?'var(--accent)':'var(--bg3)';
+  renderClients();
+}
+
+function openAddClientModal(){
+  document.getElementById('ac-phone').value='';
+  document.getElementById('ac-name').value='';
+  document.getElementById('ac-err').textContent='';
+  document.getElementById('ov-add-client').classList.add('open');
+  setTimeout(function(){document.getElementById('ac-phone').focus();},100);
+}
+
+function closeAddClientModal(){
+  document.getElementById('ov-add-client').classList.remove('open');
+}
+
+async function saveNewClient(){
+  var phone=(document.getElementById('ac-phone').value||'').trim();
+  var name=(document.getElementById('ac-name').value||'').trim();
+  var err=document.getElementById('ac-err');
+  if(!phone){err.textContent='⚠ اكتب رقم الموبايل';return;}
+  if(!name){err.textContent='⚠ اكتب الاسم';return;}
+  var ex=await idb.get(S_CLIENTS,phone);
+  if(ex){err.textContent='⚠ الرقم ده موجود بالفعل';return;}
+  await idb.put(S_CLIENTS,{phone,name,sessions:0,total:0,lastDate:null});
+  closeAddClientModal();
+  renderClients();
+  toast('✓ تم إضافة العميل: '+name,'ok');
+}
+
+// ══════════════════════════════════════════
+// Init
+// ══════════════════════════════════════════
+// ── Initialize app ────────────────────────────────────────────────────────
+(async function(){
+  try{
+    await initFirestore();
+    var restored=await restoreState();
+    if(!restored){
+      await loadBranding();
+      await loadTgConfig();
+    }
+  }catch(e){
+    console.error('Init error:',e);
+    document.getElementById('login-err').textContent='⚠ خطأ في الاتصال بـ Firebase: '+e.message;
+  }
+})();
+</script>
+<!-- Add Client Modal -->
+<div id="ov-add-client" class="ov" onclick="if(event.target===this)closeAddClientModal()">
+  <div class="modal">
+    <div class="mtit">👤 إضافة عميل جديد</div>
+    <div class="fr"><label class="fl">رقم الموبايل</label><input class="fi" type="tel" id="ac-phone" placeholder="01xxxxxxxxx"></div>
+    <div class="fr"><label class="fl">الاسم</label><input class="fi" type="text" id="ac-name" placeholder="اسم العميل"></div>
+    <div id="ac-err" style="font-size:13px;color:var(--red);min-height:14px;font-weight:600"></div>
+    <div class="mbs"><button onclick="closeAddClientModal()">إلغاء</button><button class="ok" onclick="saveNewClient()">✓ حفظ</button></div>
+  </div>
+</div>
+</body>
+</html>
