@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Gaming Center Dashboard</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Center Dashboard">
+<meta name="theme-color" content="#0070D1">
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080810;--bg2:#0e0e1c;--bg3:#14142a;--card:#111122;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --accent:#0070D1;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--gold:#f59e0b;
+  --text:#fff;--text2:#aaaacc;--text3:#666688;
+  --r:13px;--rs:9px;
+}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:24px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:44px;height:44px;background:var(--accent);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.brand-name{font-size:20px;font-weight:900}
+.brand-sub{font-size:12px;color:var(--text3)}
+.live-badge{display:flex;align-items:center;gap:7px;padding:7px 14px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:20px;font-size:13px;font-weight:700;color:var(--green)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.last-update{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.met{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.met-l{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:700}
+.met-v{font-size:30px;font-weight:900;font-family:'JetBrains Mono',monospace}
+.met-v.ac{color:var(--accent)}.met-v.gr{color:var(--green)}.met-v.gd{color:var(--gold)}.met-v.wh{color:#fff}
+.met-s{font-size:12px;color:var(--text3);margin-top:4px;font-weight:600}
+
+/* Active sessions */
+.section-title{font-size:16px;font-weight:800;margin-bottom:12px;color:#fff}
+.sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:20px}
+.sess-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.sess-card.busy{border-color:var(--accent);box-shadow:0 0 14px rgba(0,112,209,0.12)}
+.sess-card.free{border-color:rgba(34,197,94,0.25)}
+.sess-dev{font-size:15px;font-weight:800;color:#fff;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.dev-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.dev-badge.ps5{background:rgba(59,130,246,0.15);color:#3b82f6}
+.dev-badge.ps4{background:rgba(168,85,247,0.15);color:#a855f7}
+.sess-client{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:4px}
+.sess-timer{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.sess-cost{font-size:13px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}
+.sess-free-txt{font-size:14px;color:var(--text3);font-weight:600;margin:10px 0}
+
+/* History table */
+.tw{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto;margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:10px 13px;text-align:center;background:var(--bg3);color:var(--text3);font-weight:700;font-size:11px;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+tbody td{padding:10px 13px;text-align:center;border-bottom:1px solid var(--border);color:#fff}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--bg3)}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.tag.ps5{background:rgba(59,130,246,0.15);color:#3b82f6}
+.tag.ps4{background:rgba(168,85,247,0.15);color:#a855f7}
+.emp td{padding:24px;color:var(--text3);font-size:14px}
+.amc{font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}
+
+/* Shift card */
+.shift-info{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.shift-info.active{border-color:var(--green)}
+.si-icon{font-size:28px}
+.si-text{flex:1}
+.si-title{font-size:15px;font-weight:800;color:#fff}
+.si-sub{font-size:13px;color:var(--text2);margin-top:3px;font-weight:600}
+
+/* Login */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:32px;width:320px;text-align:center}
+.login-icon{font-size:40px;margin-bottom:12px}
+.login-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
+.fi{width:100%;padding:10px 13px;font-size:14px;background:var(--bg3);color:#fff;border:1px solid var(--border2);border-radius:var(--rs);font-family:'Cairo',sans-serif;outline:none;margin-bottom:10px}
+.btn-login{width:100%;padding:11px;font-size:15px;font-weight:800;font-family:'Cairo',sans-serif;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);cursor:pointer}
+.login-err{font-size:13px;color:var(--red);font-weight:700;margin-top:6px;min-height:16px}
+
+/* Revenue chart */
+.rev-bar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rev-label{min-width:60px;font-size:12px;font-weight:600;color:var(--text2)}
+.rev-bg{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.rev-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .5s}
+.rev-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);min-width:50px;text-align:left}
+
+@media(max-width:768px){
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .sessions-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="login-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center">
+  <div class="login-box">
+    <div class="login-icon">📊</div>
+    <div class="login-title">Follow-up Dashboard</div>
+    <div class="login-sub">Gaming Center — مراقبة لحظية</div>
+    <input class="fi" type="password" id="dash-pass" placeholder="كلمة السر" onkeydown="if(event.key==='Enter')dashLogin()">
+    <button class="btn-login" onclick="dashLogin()">دخول</button>
+    <div class="login-err" id="dash-err"></div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" style="display:none">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-icon">🎮</div>
+      <div>
+        <div class="brand-name" id="dash-center-name">Gaming Center</div>
+        <div class="brand-sub">Follow-up Dashboard</div>
+      </div>
+    </div>
+    <div style="text-align:left;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+      <div class="last-update" id="last-update">جاري الاتصال...</div>
+      <button id="install-btn" onclick="installApp()" style="display:none;padding:5px 12px;font-size:12px;font-weight:700;font-family:Cairo,sans-serif;background:var(--green);color:#000;border:none;border-radius:20px;cursor:pointer">📱 تثبيت كـ App</button>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="met"><div class="met-l">شغالين الآن</div><div class="met-v ac" id="d-active">—</div><div class="met-s">جهاز نشط</div></div>
+    <div class="met"><div class="met-l">إيراد الأجهزة</div><div class="met-v gr" id="d-dev-rev">—</div><div class="met-s">جنيه اليوم</div></div>
+    <div class="met"><div class="met-l">إيراد المشروبات</div><div class="met-v gd" id="d-drk-rev">—</div><div class="met-s">جنيه اليوم</div></div>
+    <div class="met"><div class="met-l">الإجمالي</div><div class="met-v wh" id="d-total">—</div><div class="met-s">جنيه اليوم</div></div>
+  </div>
+
+  <!-- Current Shift -->
+  <div class="shift-info" id="shift-info">
+    <div class="si-icon">⚪</div>
+    <div class="si-text">
+      <div class="si-title" id="shift-title">لا توجد وردية مفتوحة</div>
+      <div class="si-sub" id="shift-sub"></div>
+    </div>
+    <div style="text-align:left;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--green)" id="shift-total"></div>
+  </div>
+
+  <!-- Active Sessions -->
+  <div class="section-title">🕹 الأجهزة الآن</div>
+  <div class="sessions-grid" id="active-grid"></div>
+
+  <!-- Today Sessions -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div class="section-title" style="margin-bottom:0">📋 جلسات اليوم <span id="sess-count" style="font-size:14px;color:var(--text3)"></span></div>
+    <select id="filter-admin" onchange="renderHistory()" style="padding:6px 12px;font-size:13px;background:var(--bg3);color:#fff;border:1px solid var(--border2);border-radius:var(--rs);font-family:'Cairo',sans-serif;outline:none">
+      <option value="">كل المسؤولين</option>
+    </select>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>الجهاز</th><th>العميل</th><th>النوع</th><th>البداية</th><th>النهاية</th><th>الدقائق</th><th>الأجهزة ج</th><th>مشروبات ج</th><th>الإجمالي</th><th>الأدمن</th></tr></thead>
+      <tbody id="sess-table"><tr class="emp"><td colspan="10">جاري التحميل...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────
+var DASH_PASS = 'followup2025';
+var BASE = 'https://firestore.googleapis.com/v1/projects/play-station-center/databases/(default)/documents';
+var KEY  = 'AIzaSyDMzEJdOTiVt8sx4hiJe7R3XLCDngh4xBk';
+var TODAY_SESSIONS = [];
+var LIVE = null;
+var _timerInterval = null;
+
+// ── Login ────────────────────────────────────────────────────────────────
+function dashLogin(){
+  var pass=document.getElementById('dash-pass').value;
+  if(pass!==DASH_PASS){ document.getElementById('dash-err').textContent='⚠ كلمة السر غلط'; return; }
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  startPolling();
+}
+
+// ── REST helpers ─────────────────────────────────────────────────────────
+async function fsGet(path){
+  var r=await fetch(BASE+'/'+path+'?key='+KEY);
+  if(!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+// Convert Firestore fields to JS object
+function fromFS(fields){
+  if(!fields) return {};
+  var obj={};
+  Object.keys(fields).forEach(function(k){
+    var v=fields[k];
+    if(v.stringValue!==undefined) obj[k]=v.stringValue;
+    else if(v.integerValue!==undefined) obj[k]=parseInt(v.integerValue);
+    else if(v.doubleValue!==undefined) obj[k]=parseFloat(v.doubleValue);
+    else if(v.booleanValue!==undefined) obj[k]=v.booleanValue;
+    else if(v.nullValue!==undefined) obj[k]=null;
+    else if(v.timestampValue) obj[k]=new Date(v.timestampValue);
+    else if(v.arrayValue) obj[k]=(v.arrayValue.values||[]).map(function(x){ return x.mapValue?fromFS(x.mapValue.fields):(x.stringValue||x.doubleValue||x.integerValue||null); });
+    else if(v.mapValue) obj[k]=fromFS(v.mapValue.fields);
+  });
+  return obj;
+}
+
+// ── Polling ───────────────────────────────────────────────────────────────
+function startPolling(){
+  fetchLive();
+  setInterval(fetchLive, 10000);
+}
+
+async function fetchLive(){
+  try{
+    var doc=await fsGet('dashboard/live');
+    LIVE=fromFS(doc.fields);
+    if(LIVE.todaySessions) TODAY_SESSIONS=LIVE.todaySessions;
+    updateLiveUI();
+    renderHistory();
+    updateAdminFilter();
+    document.getElementById('last-update').textContent='آخر تحديث: '+new Date().toLocaleTimeString('ar-EG');
+  }catch(e){ document.getElementById('last-update').textContent='⚠ تعذر الاتصال: '+e.message; console.warn('fetchLive:',e); }
+}
+
+
+// ── UI ────────────────────────────────────────────────────────────────────
+function pad(n){return String(n).padStart(2,'0');}
+function fmtT(v){
+  if(!v) return '—';
+  var d=v instanceof Date?v:new Date(v);
+  if(isNaN(d)) return '—';
+  var h=d.getHours(),m=d.getMinutes(),ap=h>=12?'م':'ص';
+  h=h%12||12;return pad(h)+':'+pad(m)+' '+ap;
+}
+
+function updateLiveUI(){
+  if(!LIVE) return;
+  document.getElementById('d-active').textContent=LIVE.activeCount||0;
+  document.getElementById('d-dev-rev').textContent=(LIVE.todayRevenue||0)+' ج';
+  document.getElementById('d-drk-rev').textContent=(LIVE.todayDrinks||0)+' ج';
+  document.getElementById('d-total').textContent=(LIVE.todayTotal||0)+' ج';
+
+  // Shift
+  var shEl=document.getElementById('shift-info');
+  if(LIVE.currentShiftId){
+    shEl.classList.add('active');
+    shEl.querySelector('.si-icon').textContent='🟢';
+    document.getElementById('shift-title').textContent='وردية #'+LIVE.currentShiftId+' — '+LIVE.currentShiftUser+' (نشطة)';
+    document.getElementById('shift-total').textContent=(LIVE.currentShiftTotal||0)+' ج';
+  } else {
+    shEl.classList.remove('active');
+    shEl.querySelector('.si-icon').textContent='⚪';
+    document.getElementById('shift-title').textContent='لا توجد وردية مفتوحة';
+    document.getElementById('shift-total').textContent='';
+  }
+
+  // Active sessions
+  renderActiveGrid(LIVE.activeSessions||[]);
+}
+
+function renderActiveGrid(sessions){
+  var grid=document.getElementById('active-grid');
+  if(!sessions.length){
+    grid.innerHTML='<div style="color:var(--text3);font-size:14px;font-weight:600;padding:20px 0;grid-column:1/-1">😴 لا توجد جلسات نشطة الآن</div>';
+    clearInterval(_timerInterval); return;
+  }
+  var startTimes={};
+  sessions.forEach(function(s){ if(s.startMs) startTimes[s.device]=s.startMs; });
+  grid.innerHTML=sessions.map(function(s){
+    var tc=(s.device||'').includes('PS5')?'ps5':'ps4';
+    var elMin=s.elapsed||0;
+    var h=Math.floor(elMin/60),m=elMin%60;
+    return '<div class="sess-card busy">'
+      +'<div class="sess-dev"><span>'+s.device+'</span><span class="dev-badge '+tc+'">'+(tc==='ps5'?'PS5':'PS4')+'</span></div>'
+      +'<div class="sess-client">👤 '+(s.client||'—')+' · '+(s.game||'')+'</div>'
+      +'<div class="sess-timer" id="atimer-'+s.device.replace(/[^a-z0-9]/gi,'_')+'">'+pad(h)+':'+pad(m)+':00</div>'
+      +'<div class="sess-cost">💰 '+(s.cost||0)+' ج</div>'
+      +'</div>';
+  }).join('');
+
+  clearInterval(_timerInterval);
+  _timerInterval=setInterval(function(){
+    sessions.forEach(function(s){
+      var el=document.getElementById('atimer-'+s.device.replace(/[^a-z0-9]/gi,'_'));
+      if(el&&startTimes[s.device]){
+        var ms=Date.now()-startTimes[s.device];
+        var sec=Math.floor(ms/1000);
+        el.textContent=pad(Math.floor(sec/3600))+':'+pad(Math.floor((sec%3600)/60))+':'+pad(sec%60);
+      }
+    });
+  },1000);
+}
+
+function renderHistory(){
+  var filter=(document.getElementById('filter-admin')||{}).value||'';
+  var list=filter?TODAY_SESSIONS.filter(function(s){return s.admin===filter;}):TODAY_SESSIONS;
+  document.getElementById('sess-count').textContent='('+list.length+' جلسة)';
+  var tb=document.getElementById('sess-table');
+  if(!list.length){ tb.innerHTML='<tr class="emp"><td colspan="10">لا توجد جلسات اليوم</td></tr>'; return; }
+  tb.innerHTML=list.map(function(s){
+    var tc=(s.device||'').includes('PS5')?'ps5':'ps4';
+    return '<tr>'
+      +'<td><span class="tag '+tc+'">'+(s.device||'—')+'</span></td>'
+      +'<td>'+(s.client||s.phone||'—')+'</td>'
+      +'<td>'+(s.game||'—')+'</td>'
+      +'<td>'+fmtT(s.startTime||s.start)+'</td>'
+      +'<td>'+fmtT(s.endTime||s.end)+'</td>'
+      +'<td>'+(s.mins||0)+'</td>'
+      +'<td class="amc">'+(s.actual||0)+' ج</td>'
+      +'<td style="color:var(--amber);font-weight:700;font-family:monospace">'+(s.drinks_total||0)+' ج</td>'
+      +'<td style="color:var(--green);font-weight:700;font-family:monospace">'+(s.grand_total||s.actual||0)+' ج</td>'
+      +'<td>'+(s.admin||'—')+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+function updateAdminFilter(){
+  var admins=[...new Set(TODAY_SESSIONS.map(function(s){return s.admin||'';}).filter(Boolean))];
+  var sel=document.getElementById('filter-admin');
+  var prev=sel.value;
+  sel.innerHTML='<option value="">كل المسؤولين</option>';
+  admins.forEach(function(a){ sel.innerHTML+='<option value="'+a+'">'+a+'</option>'; });
+  sel.value=prev;
+}
+</script>
+<script>
+// Service Worker
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").catch(function(e){console.log("SW:",e);});
+}
+// Install prompt
+var installPrompt=null;
+window.addEventListener("beforeinstallprompt",function(e){
+  e.preventDefault(); installPrompt=e;
+  var btn=document.getElementById("install-btn");
+  if(btn) btn.style.display="block";
+});
+function installApp(){
+  if(!installPrompt) return;
+  installPrompt.prompt();
+  installPrompt.userChoice.then(function(){ installPrompt=null; });
+}
+</script>
+</body>
+</html>
