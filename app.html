@@ -749,175 +749,93 @@ tbody tr:hover td{background:var(--bg3)}
 // ══════════════════════════════════════════
 // Firebase — loaded after app init
 // ══════════════════════════════════════════
-FB.loadQueue();
 
 
 // ══════════════════════════════════════════
 // IndexedDB
 // ══════════════════════════════════════════
 // ══════════════════════════════════════════
-// Firebase REST API — replaces IndexedDB
+// Firebase SDK — replaces IndexedDB
 // ══════════════════════════════════════════
 const S_SESS='sessions',S_USERS='users',S_DEVICES='devices',S_PRICES='prices',S_DRINKS='drinks',S_CLIENTS='clients',S_SETTINGS='settings',S_SHIFTS='shifts',S_AUTH='auth_devices',S_CODES='act_codes';
 const SW_USER='software_admin',SW_PASS='Dd130687$$';
-const FB_PROJECT='play-station-center';
-const FB_KEY='AIzaSyDMzEJdOTiVt8sx4hiJe7R3XLCDngh4xBk';
-const FB_BASE='https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default)/documents';
-const FB_QUERY='https://firestore.googleapis.com/v1/projects/'+FB_PROJECT+'/databases/(default)/documents:runQuery?key='+FB_KEY;
 
-// Default data (seeded on first run)
-const DEFAULT_USERS=[{name:'admin',pass:'admin123',role:'admin'},{name:'أحمد',pass:'294',role:'user'},{name:'زياد',pass:'1234',role:'user'},{name:'مهند',pass:'1234',role:'user'}];
-const DEFAULT_DEVICES=[{id:'PS5-1',type:'PS5'},{id:'PS5-2',type:'PS5'},{id:'PS4-1',type:'PS4'},{id:'PS4-2',type:'PS4'},{id:'PS4-3',type:'PS4'}];
-const DEFAULT_PRICES=[{key:'PS5_فردى',val:35},{key:'PS5_ملتي',val:40},{key:'PS4_فردى',val:25},{key:'PS4_ملتي',val:35}];
-const DEFAULT_DRINKS=[{name:'مياه',price:5},{name:'بيبسي',price:10},{name:'عصير',price:15}];
-
-// ── Firestore type converters ──────────────────────────────────────────────
-function toFSVal(v){
-  if(v===null||v===undefined) return {nullValue:null};
-  if(typeof v==='boolean') return {booleanValue:v};
-  if(typeof v==='number') return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
-  if(typeof v==='string') return {stringValue:v};
-  if(v instanceof Date) return {timestampValue:v.toISOString()};
-  if(Array.isArray(v)) return {arrayValue:{values:v.map(toFSVal)}};
-  if(typeof v==='object') return {mapValue:{fields:toFSFields(v)}};
-  return {stringValue:String(v)};
-}
-function toFSFields(obj){
-  var f={};
-  Object.keys(obj).forEach(function(k){f[k]=toFSVal(obj[k]);});
-  return f;
-}
-function fromFSVal(v){
-  if(!v) return null;
-  if('nullValue' in v) return null;
-  if('booleanValue' in v) return v.booleanValue;
-  if('integerValue' in v) return parseInt(v.integerValue);
-  if('doubleValue' in v) return parseFloat(v.doubleValue);
-  if('stringValue' in v) return v.stringValue;
-  if('timestampValue' in v) return v.timestampValue;
-  if('arrayValue' in v) return (v.arrayValue.values||[]).map(fromFSVal);
-  if('mapValue' in v) return fromFSFields(v.mapValue.fields||{});
-  return null;
-}
-function fromFSFields(fields){
-  var obj={};
-  if(!fields) return obj;
-  Object.keys(fields).forEach(function(k){obj[k]=fromFSVal(fields[k]);});
-  return obj;
+// Firebase initialized via SDK (loaded in <head>)
+var _fbApp=null, _fsDb=null;
+function initFirebaseSDK(){
+  if(typeof firebase==='undefined') throw new Error('Firebase SDK not loaded');
+  var cfg={apiKey:'AIzaSyDMzEJdOTiVt8sx4hiJe7R3XLCDngh4xBk',authDomain:'play-station-center.firebaseapp.com',projectId:'play-station-center',storageBucket:'play-station-center.firebasestorage.app',messagingSenderId:'780012085006',appId:'1:780012085006:web:b3020ff40a8e333f72015f'};
+  if(!firebase.apps.length) _fbApp=firebase.initializeApp(cfg);
+  else _fbApp=firebase.app();
+  _fsDb=firebase.firestore();
 }
 
-// ── Key paths for each collection ──────────────────────────────────────────
+// Default data
+var DEFAULT_USERS=[{name:'admin',pass:'admin123',role:'admin'},{name:'أحمد',pass:'294',role:'user'},{name:'زياد',pass:'1234',role:'user'},{name:'مهند',pass:'1234',role:'user'}];
+var DEFAULT_DEVICES=[{id:'PS5-1',type:'PS5'},{id:'PS5-2',type:'PS5'},{id:'PS4-1',type:'PS4'},{id:'PS4-2',type:'PS4'},{id:'PS4-3',type:'PS4'}];
+var DEFAULT_PRICES=[{key:'PS5_فردى',val:35},{key:'PS5_ملتي',val:40},{key:'PS4_فردى',val:25},{key:'PS4_ملتي',val:35}];
+var DEFAULT_DRINKS=[{name:'مياه',price:5},{name:'بيبسي',price:10},{name:'عصير',price:15}];
+
 function getKeyPath(store){
-  if(store===S_SESS) return 'tx';
-  if(store===S_USERS) return 'name';
-  if(store===S_DEVICES) return 'id';
-  if(store===S_PRICES) return 'key';
-  if(store===S_DRINKS) return 'name';
-  if(store===S_CLIENTS) return 'phone';
-  if(store===S_SETTINGS) return 'key';
-  if(store===S_SHIFTS) return 'id';
-  if(store===S_AUTH) return 'token';
-  if(store===S_CODES) return 'code';
-  return 'id';
+  var m={sessions:'tx',users:'name',devices:'id',prices:'key',drinks:'name',clients:'phone',settings:'key',shifts:'id',auth_devices:'token',act_codes:'code'};
+  return m[store]||'id';
 }
 
-// ── Firebase REST idb replacement ──────────────────────────────────────────
-const idb={
+// idb — Firestore SDK wrapper
+var idb={
   getAll: async function(store){
-    try{
-      var url=FB_BASE+'/'+store+'?key='+FB_KEY+'&pageSize=1000';
-      var r=await fetch(url);
-      if(!r.ok) return [];
-      var data=await r.json();
-      if(!data.documents) return [];
-      return data.documents.map(function(doc){ return fromFSFields(doc.fields); });
-    }catch(e){ console.warn('idb.getAll',store,e); return []; }
+    if(!_fsDb){console.warn('idb.getAll: Firebase not ready');return [];}
+    var snap=await _fsDb.collection(store).get();
+    return snap.docs.map(function(d){return d.data();});
   },
-
   get: async function(store,key){
-    try{
-      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(String(key))+'?key='+FB_KEY;
-      var r=await fetch(url);
-      if(!r.ok) return undefined;
-      var doc=await r.json();
-      return fromFSFields(doc.fields);
-    }catch(e){ return undefined; }
+    if(!_fsDb){return undefined;}
+    var doc=await _fsDb.collection(store).doc(String(key)).get();
+    return doc.exists?doc.data():undefined;
   },
-
   add: async function(store,obj){
+    if(!_fsDb) throw new Error('Firebase not ready');
     var kp=getKeyPath(store);
-    var docId;
-    if(store===S_SESS||store===S_SHIFTS){
-      docId=Date.now()+'_'+Math.random().toString(36).slice(2,6);
-      obj[kp]=store===S_SESS?parseInt(Date.now()):parseInt(Date.now());
-      // Use numeric timestamp as the key
-      docId=String(obj[kp]);
-    } else {
-      docId=String(obj[kp]);
+    if(store==='sessions'||store==='shifts'){
+      obj[kp]=Date.now();
     }
-    try{
-      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(docId)+'?key='+FB_KEY;
-      await fetch(url,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:toFSFields(obj)})});
-      return obj[kp];
-    }catch(e){ console.warn('idb.add',store,e); throw e; }
+    await _fsDb.collection(store).doc(String(obj[kp])).set(obj);
+    return obj[kp];
   },
-
   put: async function(store,obj){
+    if(!_fsDb) throw new Error('Firebase not ready');
     var kp=getKeyPath(store);
-    var docId=String(obj[kp]);
-    try{
-      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(docId)+'?key='+FB_KEY;
-      await fetch(url,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:toFSFields(obj)})});
-      return obj[kp];
-    }catch(e){ console.warn('idb.put',store,e); throw e; }
+    await _fsDb.collection(store).doc(String(obj[kp])).set(obj,{merge:true});
+    return obj[kp];
   },
-
   del: async function(store,key){
-    try{
-      var url=FB_BASE+'/'+store+'/'+encodeURIComponent(String(key))+'?key='+FB_KEY;
-      await fetch(url,{method:'DELETE'});
-    }catch(e){ console.warn('idb.del',store,e); }
+    await _fsDb.collection(store).doc(String(key)).delete();
   },
-
   range: async function(from,to){
-    try{
-      var body={structuredQuery:{from:[{collectionId:S_SESS}],
-        where:{compositeFilter:{op:'AND',filters:[
-          {fieldFilter:{field:{fieldPath:'date'},op:'GREATER_THAN_OR_EQUAL',value:{stringValue:from}}},
-          {fieldFilter:{field:{fieldPath:'date'},op:'LESS_THAN_OR_EQUAL',value:{stringValue:to}}}
-        ]}},
-        orderBy:[{field:{fieldPath:'start'},direction:'DESCENDING'}],
-        limit:2000
-      }};
-      var r=await fetch(FB_QUERY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-      var data=await r.json();
-      return (Array.isArray(data)?data:[]).filter(function(d){return d.document;}).map(function(d){return fromFSFields(d.document.fields);});
-    }catch(e){ console.warn('idb.range',e); return []; }
+    var snap=await _fsDb.collection('sessions').where('date','>=',from).where('date','<=',to).orderBy('date','desc').get();
+    return snap.docs.map(function(d){return d.data();});
   },
-
   delRange: async function(from,to){
     var sessions=await idb.range(from,to);
-    for(var i=0;i<sessions.length;i++){
-      await idb.del(S_SESS,sessions[i].tx);
-    }
+    var batch=_fsDb.batch();
+    sessions.forEach(function(s){batch.delete(_fsDb.collection('sessions').doc(String(s.tx)));});
+    await batch.commit();
     return sessions.length;
   }
 };
 
-// ── First run: seed default data ───────────────────────────────────────────
 async function initFirestore(){
+  if(!_fsDb){console.warn("initFirestore: Firebase not ready");return;}
   try{
-    // Check if already initialized
     var init=await idb.get(S_SETTINGS,'initialized');
     if(init) return;
-    // Seed defaults
     for(var u of DEFAULT_USERS) await idb.put(S_USERS,u);
     for(var d of DEFAULT_DEVICES) await idb.put(S_DEVICES,d);
     for(var p of DEFAULT_PRICES) await idb.put(S_PRICES,p);
     for(var dr of DEFAULT_DRINKS) await idb.put(S_DRINKS,dr);
     await idb.put(S_SETTINGS,{key:'initialized',val:true});
-    console.log('Firestore seeded with default data');
-  }catch(e){ console.warn('initFirestore:',e); }
+    console.log('Firestore seeded');
+  }catch(e){console.warn('initFirestore:',e);}
 }
 
 // ══════════════════════════════════════════
@@ -2506,6 +2424,21 @@ async function saveNewClient(){
 }
 
 // ══════════════════════════════════════════
+// Device Activation
+// ══════════════════════════════════════════
+async function checkDeviceOnLoad(){
+  try{
+    var authDevices=await idb.getAll(S_AUTH);
+    if(!authDevices||authDevices.length===0) return; // no restrictions
+    var tok=localStorage.getItem('zb_dev_tok')||'';
+    if(tok && authDevices.find(function(d){return d.token===tok;})) return;
+    if(localStorage.getItem('zb_activated')==='1') return;
+    var scr=document.getElementById('activation-screen');
+    if(scr) scr.style.display='flex';
+  }catch(e){ console.warn('checkDeviceOnLoad:',e); }
+}
+
+// ══════════════════════════════════════════
 // Init
 // ══════════════════════════════════════════
 // ── Initialize app ────────────────────────────────────────────────────────
@@ -2517,6 +2450,7 @@ async function saveNewClient(){
       await loadBranding();
       await loadTgConfig();
     }
+    await checkDeviceOnLoad();
   }catch(e){
     console.error('Init error:',e);
     document.getElementById('login-err').textContent='⚠ خطأ في الاتصال بـ Firebase: '+e.message;
@@ -2533,5 +2467,44 @@ async function saveNewClient(){
     <div class="mbs"><button onclick="closeAddClientModal()">إلغاء</button><button class="ok" onclick="saveNewClient()">✓ حفظ</button></div>
   </div>
 </div>
+<script>
+// Load Firebase SDK then start app
+function _loadScript(src, onload){
+  var s=document.createElement("script");
+  s.src=src;
+  s.onload=onload;
+  s.onerror=function(){ document.getElementById("login-err").textContent="⚠ فشل تحميل Firebase — تأكد من الاتصال بالإنترنت"; };
+  document.head.appendChild(s);
+}
+window.addEventListener("load", function(){
+  var errEl=document.getElementById("login-err");
+  if(errEl){errEl.style.color="var(--accent)";errEl.textContent="⏳ جاري الاتصال بـ Firebase...";}
+  _loadScript("https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app-compat.min.js", function(){
+    _loadScript("https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore-compat.min.js", function(){
+      try{
+        initFirebaseSDK();
+        var el=document.getElementById("login-err");if(el)el.textContent="";
+        // Re-run init now that Firebase is ready
+        (async function(){
+          try{
+            await initFirestore();
+            var restored=await restoreState();
+            if(!restored){
+              await loadBranding();
+              await loadTgConfig();
+            }
+            await checkDeviceOnLoad();
+          }catch(e){
+            console.error("App init:",e);
+            document.getElementById("login-err").textContent="⚠ خطأ: "+e.message;
+          }
+        })();
+      }catch(e){
+        document.getElementById("login-err").textContent="⚠ Firebase error: "+e.message;
+      }
+    });
+  });
+});
+</script>
 </body>
 </html>
