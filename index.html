@@ -150,7 +150,13 @@ function dashLogin(){
 // Fetch live doc via simple GET
 async function poll(){
   try{
-    var r=await fetch(BASE+'/dashboard/live?key='+KEY);
+    var _url=BASE+'/dashboard/live?key='+KEY;
+    // Try direct first, then CORS proxy
+    var r;
+    try{r=await fetch(_url,{mode:'cors'});}catch(e1){
+      var _proxy='https://corsproxy.io/?'+encodeURIComponent(_url);
+      r=await fetch(_proxy);
+    }
     if(r.status===404){
       document.getElementById('upd-time').textContent='⏳ في انتظار البيانات من السنتر...';
       return;
