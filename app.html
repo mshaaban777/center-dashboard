@@ -266,6 +266,8 @@ tbody tr:hover td{background:var(--bg3)}
 .cc-phone{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text2);margin-top:2px}
 .cc-stats{font-size:12px;color:var(--text3);margin-top:3px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore-compat.min.js"></script>
 </head>
 <body>
 
@@ -762,7 +764,19 @@ const SW_USER='software_admin',SW_PASS='Dd130687$$';
 
 // Firebase initialized via SDK (loaded in <head>)
 var _fbApp=null, _fsDb=null;
-function initFirebaseSDK(){
+// Initialize immediately since SDK is loaded in <head>
+(function(){
+  try{
+    var cfg={apiKey:'AIzaSyDMzEJdOTiVt8sx4hiJe7R3XLCDngh4xBk',authDomain:'play-station-center.firebaseapp.com',projectId:'play-station-center',storageBucket:'play-station-center.firebasestorage.app',messagingSenderId:'780012085006',appId:'1:780012085006:web:b3020ff40a8e333f72015f'};
+    if(!firebase.apps.length) _fbApp=firebase.initializeApp(cfg);
+    else _fbApp=firebase.app();
+    _fsDb=firebase.firestore();
+    _fsDb.settings({experimentalForceLongPolling:true,merge:true});
+    console.log('Firebase initialized immediately:', !!_fsDb);
+  }catch(e){console.error('Firebase immediate init failed:',e);}
+})();
+
+function initFirebaseSDK_legacy(){
   if(typeof firebase==='undefined') throw new Error('Firebase SDK not loaded');
   var cfg={apiKey:'AIzaSyDMzEJdOTiVt8sx4hiJe7R3XLCDngh4xBk',authDomain:'play-station-center.firebaseapp.com',projectId:'play-station-center',storageBucket:'play-station-center.firebasestorage.app',messagingSenderId:'780012085006',appId:'1:780012085006:web:b3020ff40a8e333f72015f'};
   if(!firebase.apps.length) _fbApp=firebase.initializeApp(cfg);
@@ -2467,44 +2481,5 @@ async function checkDeviceOnLoad(){
     <div class="mbs"><button onclick="closeAddClientModal()">إلغاء</button><button class="ok" onclick="saveNewClient()">✓ حفظ</button></div>
   </div>
 </div>
-<script>
-// Load Firebase SDK then start app
-function _loadScript(src, onload){
-  var s=document.createElement("script");
-  s.src=src;
-  s.onload=onload;
-  s.onerror=function(){ document.getElementById("login-err").textContent="⚠ فشل تحميل Firebase — تأكد من الاتصال بالإنترنت"; };
-  document.head.appendChild(s);
-}
-window.addEventListener("load", function(){
-  var errEl=document.getElementById("login-err");
-  if(errEl){errEl.style.color="var(--accent)";errEl.textContent="⏳ جاري الاتصال بـ Firebase...";}
-  _loadScript("https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app-compat.min.js", function(){
-    _loadScript("https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore-compat.min.js", function(){
-      try{
-        initFirebaseSDK();
-        var el=document.getElementById("login-err");if(el)el.textContent="";
-        // Re-run init now that Firebase is ready
-        (async function(){
-          try{
-            await initFirestore();
-            var restored=await restoreState();
-            if(!restored){
-              await loadBranding();
-              await loadTgConfig();
-            }
-            await checkDeviceOnLoad();
-          }catch(e){
-            console.error("App init:",e);
-            document.getElementById("login-err").textContent="⚠ خطأ: "+e.message;
-          }
-        })();
-      }catch(e){
-        document.getElementById("login-err").textContent="⚠ Firebase error: "+e.message;
-      }
-    });
-  });
-});
-</script>
 </body>
 </html>
